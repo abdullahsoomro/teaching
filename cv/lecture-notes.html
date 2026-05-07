@@ -105,9 +105,12 @@
             <h4 class="font-medium text-slate-800 mt-4">Forward Pass (Intuition)</h4>
             <p>Input → Conv + Activation → Pool → Flatten → Dense Layers → Softmax/Sigmoid → Prediction</p>
             <h4 class="font-medium text-slate-800 mt-4">Backpropagation (Conceptual)</h4>
-            <p>1. Compute loss (prediction vs ground truth) <br>2. Calculate gradients ∂Loss/∂Weights using chain rule <br>3. Update weights: W = W - η × ∇W <br>4. Repeat until loss stabilizes</p>
+            <p>1. Compute loss (prediction vs ground truth) <br>2. Calculate gradients ∂Loss/∂Weights using chain rule <br>3. Update weights: W = W - η × ∇W <br>4. Repeat until loss stabilizes <br></p>
+          </div>
+          <div class="code-block"> <a href="lecture-notes-set3.html">Click Here for more details</a>
           </div>
         </div>
+        
       </section>
 
       <section id="training" class="scroll-mt-28">
@@ -148,6 +151,7 @@
               <div class="bg-green-50 p-2 rounded border"><strong>Good Generalization</strong><br>Balanced bias-variance. Strong performance on unseen data.</div>
             </div>
             <div class="code-block mt-3">
+              <pre>
 # PyTorch Training Loop Skeleton
 criterion = nn.BCEWithLogitsLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
@@ -160,7 +164,8 @@ for epoch in range(num_epochs):
         loss = criterion(out, y)
         loss.backward()
         optimizer.step()
-            </div>
+      </pre>
+            </div> 
           </div>
         </div>
       </section>
