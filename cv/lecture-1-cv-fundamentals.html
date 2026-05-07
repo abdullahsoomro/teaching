@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS-1013: Lecture Notes Set 1 - CV Fundamentals & Image Processing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+    .code-block { 
+      background: #1e293b; 
+      color: #e2e8f0; 
+      padding: 1.5rem; 
+      border-radius: 0.5rem; 
+      overflow-x: auto; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    .diagram-box { 
+      background: #f8fafc; 
+      border: 2px solid #cbd5e1; 
+      border-radius: 0.5rem; 
+      padding: 1.5rem; 
+      margin: 1rem 0;
+    }
+    .trace-step { 
+      background: #f0f9ff; 
+      border-left: 4px solid #0284c7; 
+      padding: 1rem; 
+      margin: 0.75rem 0;
+      border-radius: 0 0.375rem 0.375rem 0;
+    }
+    .formula-box { 
+      background: #fef3c7; 
+      border: 1px solid #f59e0b; 
+      padding: 1rem; 
+      border-radius: 0.375rem; 
+      text-align: center;
+      font-size: 1.1rem;
+      margin: 1rem 0;
+    }
+    .example-box { 
+      background: #dcfce7; 
+      border: 1px solid #22c55e; 
+      padding: 1rem; 
+      border-radius: 0.375rem; 
+      margin: 1rem 0;
+    }
+    .comparison-table th, .comparison-table td { 
+      border: 1px solid #cbd5e1; 
+      padding: 0.75rem; 
+      text-align: left;
+    }
+    .comparison-table th { background: #f1f5f9; }
+    .highlight { background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%); padding: 0 0.25rem; }
+    nav.toc a { 
+      display: block; 
+      padding: 0.5rem 0.75rem; 
+      border-radius: 0.375rem; 
+      color: #475569; 
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+    nav.toc a:hover { background-color: #f1f5f9; color: #0f172a; }
+    .pixel-grid { 
+      display: inline-grid; 
+      gap: 1px; 
+      background: #cbd5e1; 
+      border: 2px solid #475569;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+    .pixel { 
+      background: white; 
+      padding: 0.5rem; 
+      text-align: center;
+      min-width: 2rem;
+    }
+    .pixel.header { background: #e2e8f0; font-weight: bold; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-700 antialiased">
+
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Back to Course
+        </a>
+        <span class="text-slate-300">|</span>
+        <span class="text-sm text-slate-600">CS-1013 • Lecture Notes Set 1</span>
+      </div>
+      <div class="text-sm font-medium text-slate-700">CV Fundamentals & Image Processing</div>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-slate-800 to-slate-900 text-white py-12">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <div class="inline-block px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-4">
+        Lecture 1 • Weeks 1-2
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">Computer Vision Fundamentals & Image Processing</h1>
+      <p class="text-slate-300 text-lg max-w-3xl">
+        Understanding the foundations: What is computer vision, how does it differ from related fields, 
+        and the fundamental techniques of image processing.
+      </p>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8 max-w-7xl grid md:grid-cols-4 gap-8">
+    <!-- Table of Contents -->
+    <aside class="md:col-span-1">
+      <nav class="toc sticky top-24 bg-white rounded-lg border border-slate-200 p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider border-b border-slate-200 pb-2">Table of Contents</h3>
+        <a href="#intro">1. Introduction to CV</a>
+        <a href="#ai-cv-diff">2. AI vs Computer Vision</a>
+        <a href="#fields-comparison">3. CV vs IP vs Graphics</a>
+        <a href="#image-formation">4. Image Formation</a>
+        <a href="#histogram">5. Image Histogram</a>
+        <a href="#contrast-stretching">6. Contrast Stretching</a>
+        <a href="#thresholding">7. Thresholding & Binarization</a>
+        <a href="#practical">8. Practical Examples</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="md:col-span-3 space-y-10">
+      
+      <!-- Section 1: Introduction -->
+      <section id="intro" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">1</span>
+            Introduction to Computer Vision
+          </h2>
+          
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 leading-relaxed mb-4">
+              <strong class="text-slate-800">Computer Vision (CV)</strong> is a field of artificial intelligence that enables computers and systems to derive meaningful information from digital images, videos, and other visual inputs, and take actions or make recommendations based on that information.
+            </p>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+              <p class="text-blue-900 font-medium mb-2">🎯 Definition:</p>
+              <p class="text-blue-800">"The science and technology of machines that see and understand visual content."</p>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Why Study Computer Vision?</h3>
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">🔬 Scientific Goals</h4>
+                <ul class="text-sm text-slate-600 space-y-1">
+                  <li>• Understand biological vision systems</li>
+                  <li>• Model human perception</li>
+                  <li>• Reconstruct 3D from 2D images</li>
+                  <li>• Recognize objects and scenes</li>
+                </ul>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">🏭 Engineering Goals</h4>
+                <ul class="text-sm text-slate-600 space-y-1">
+                  <li>• Build autonomous systems</li>
+                  <li>• Create intelligent cameras</li>
+                  <li>• Develop medical imaging tools</li>
+                  <li>• Enable human-computer interaction</li>
+                </ul>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Real-World Applications</h3>
+            <div class="space-y-3">
+              <div class="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                <span class="text-2xl">🚗</span>
+                <div>
+                  <h4 class="font-semibold text-green-900">Autonomous Vehicles</h4>
+                  <p class="text-sm text-green-800">Lane detection, traffic sign recognition, pedestrian detection, obstacle avoidance</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                <span class="text-2xl">🏥</span>
+                <div>
+                  <h4 class="font-semibold text-purple-900">Medical Imaging</h4>
+                  <p class="text-sm text-purple-800">Tumor detection, X-ray analysis, MRI segmentation, disease diagnosis</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                <span class="text-2xl">📱</span>
+                <div>
+                  <h4 class="font-semibold text-orange-900">Augmented Reality</h4>
+                  <p class="text-sm text-orange-800">Face filters, object tracking, 3D reconstruction, virtual try-ons</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                <span class="text-2xl">🔒</span>
+                <div>
+                  <h4 class="font-semibold text-red-900">Security & Surveillance</h4>
+                  <p class="text-sm text-red-800">Facial recognition, anomaly detection, crowd monitoring, access control</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: AI vs CV -->
+      <section id="ai-cv-diff" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">2</span>
+            Artificial Intelligence vs Computer Vision
+          </h2>
+
+          <div class="diagram-box my-6">
+            <h4 class="font-semibold text-slate-800 mb-3">Hierarchical Relationship</h4>
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-full max-w-md bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg text-center font-semibold shadow-lg">
+                Artificial Intelligence (AI)
+                <div class="text-xs font-normal mt-1 opacity-90">Broadest field - machines performing intelligent tasks</div>
+              </div>
+              <div class="h-8 w-0.5 bg-slate-400"></div>
+              <div class="w-full max-w-sm bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 rounded-lg text-center font-semibold shadow-md">
+                Machine Learning (ML)
+                <div class="text-xs font-normal mt-1 opacity-90">Subset of AI - learning from data</div>
+              </div>
+              <div class="h-8 w-0.5 bg-slate-400"></div>
+              <div class="w-full max-w-xs bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-3 rounded-lg text-center font-semibold shadow-md">
+                Deep Learning (DL)
+                <div class="text-xs font-normal mt-1 opacity-90">Subset of ML - neural networks</div>
+              </div>
+              <div class="h-8 w-0.5 bg-slate-400"></div>
+              <div class="w-full max-w-xs bg-gradient-to-r from-teal-500 to-teal-600 text-white p-3 rounded-lg text-center font-semibold shadow-md">
+                Computer Vision (CV)
+                <div class="text-xs font-normal mt-1 opacity-90">Application area - visual understanding</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto my-6">
+            <table class="comparison-table w-full text-sm">
+              <thead>
+                <tr>
+                  <th class="w-1/3">Aspect</th>
+                  <th class="w-1/3">Artificial Intelligence</th>
+                  <th class="w-1/3">Computer Vision</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-medium text-slate-700">Scope</td>
+                  <td>Broad field covering all intelligent systems</td>
+                  <td>Specialized field focused on visual data</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Input Data</td>
+                  <td>Any data type (text, numbers, audio, images)</td>
+                  <td>Primarily images and videos</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Goal</td>
+                  <td>Mimic human intelligence</td>
+                  <td>Extract meaning from visual content</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Examples</td>
+                  <td>Chatbots, recommendation systems, game AI</td>
+                  <td>Object detection, image segmentation, facial recognition</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Techniques</td>
+                  <td>Rule-based systems, ML, search algorithms</td>
+                  <td>CNNs, image processing, feature extraction</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="example-box">
+            <h4 class="font-semibold text-green-900 mb-2">💡 Key Insight:</h4>
+            <p class="text-green-800 text-sm">
+              <strong>Not all AI uses vision</strong> (e.g., chess-playing AI), but <strong>modern CV heavily relies on AI</strong> 
+              (especially deep learning). Computer Vision is an <span class="highlight">application domain</span> of AI, 
+              not a separate field.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: CV vs IP vs Graphics -->
+      <section id="fields-comparison" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">3</span>
+            Computer Vision vs Image Processing vs Computer Graphics
+          </h2>
+
+          <div class="grid md:grid-cols-3 gap-4 my-6">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-lg border-2 border-blue-300">
+              <div class="text-3xl mb-2">📷</div>
+              <h3 class="font-bold text-blue-900 mb-2">Image Processing</h3>
+              <p class="text-xs text-blue-800 mb-3">Enhancement & Manipulation</p>
+              <div class="text-sm text-blue-900 space-y-1">
+                <p><strong>Input:</strong> Image</p>
+                <p><strong>Output:</strong> Enhanced/Modified Image</p>
+                <p><strong>Goal:</strong> Improve quality or extract features</p>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-lg border-2 border-green-300">
+              <div class="text-3xl mb-2">🧠</div>
+              <h3 class="font-bold text-green-900 mb-2">Computer Vision</h3>
+              <p class="text-xs text-green-800 mb-3">Understanding & Interpretation</p>
+              <div class="text-sm text-green-900 space-y-1">
+                <p><strong>Input:</strong> Image/Video</p>
+                <p><strong>Output:</strong> Information/Understanding</p>
+                <p><strong>Goal:</strong> Recognize, classify, understand</p>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-lg border-2 border-purple-300">
+              <div class="text-3xl mb-2">🎨</div>
+              <h3 class="font-bold text-purple-900 mb-2">Computer Graphics</h3>
+              <p class="text-xs text-purple-800 mb-3">Synthesis & Rendering</p>
+              <div class="text-sm text-purple-900 space-y-1">
+                <p><strong>Input:</strong> 3D Models/Data</p>
+                <p><strong>Output:</strong> Rendered Image</p>
+                <p><strong>Goal:</strong> Create visual content</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="diagram-box my-6">
+            <h4 class="font-semibold text-slate-800 mb-4">Visual Pipeline Comparison</h4>
+            
+            <div class="space-y-4">
+              <div class="bg-white p-4 rounded border border-slate-300">
+                <h5 class="font-semibold text-blue-700 mb-2">Image Processing Pipeline:</h5>
+                <div class="flex items-center gap-2 text-sm flex-wrap">
+                  <span class="px-3 py-1 bg-slate-200 rounded">Noisy Image</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-blue-100 rounded">Filtering</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-blue-100 rounded">Enhancement</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-green-200 rounded">Clean Image</span>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded border border-slate-300">
+                <h5 class="font-semibold text-green-700 mb-2">Computer Vision Pipeline:</h5>
+                <div class="flex items-center gap-2 text-sm flex-wrap">
+                  <span class="px-3 py-1 bg-slate-200 rounded">Image</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-green-100 rounded">Feature Extraction</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-green-100 rounded">Classification</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-yellow-200 rounded">"Cat" (Label)</span>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded border border-slate-300">
+                <h5 class="font-semibold text-purple-700 mb-2">Computer Graphics Pipeline:</h5>
+                <div class="flex items-center gap-2 text-sm flex-wrap">
+                  <span class="px-3 py-1 bg-slate-200 rounded">3D Model</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-purple-100 rounded">Lighting</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-purple-100 rounded">Rendering</span>
+                  <span class="text-slate-500">→</span>
+                  <span class="px-3 py-1 bg-purple-200 rounded">Realistic Image</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h4 class="font-semibold text-green-900 mb-2">📝 Example Scenario: Processing a Photograph</h4>
+            <ul class="text-sm text-green-800 space-y-2">
+              <li><strong>Image Processing:</strong> Remove noise, adjust brightness, sharpen edges</li>
+              <li><strong>Computer Vision:</strong> Identify objects, detect faces, recognize scenes</li>
+              <li><strong>Computer Graphics:</strong> Add 3D objects to the photo, create special effects</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Image Formation -->
+      <section id="image-formation" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">4</span>
+            Image Formation & Digital Representation
+          </h2>
+
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 mb-4">
+              A <strong>digital image</strong> is a 2D function <span class="font-mono bg-slate-100 px-1 rounded">f(x, y)</span> where 
+              <span class="font-mono">x</span> and <span class="font-mono">y</span> are spatial coordinates, and the amplitude of 
+              <span class="font-mono">f</span> at any pair (x, y) is called the <strong>intensity</strong> or <strong>gray level</strong> of the image.
+            </p>
+
+            <div class="formula-box">
+              <strong>Image Function:</strong> f(x, y) where 0 ≤ f(x, y) ≤ 255 (for 8-bit grayscale)
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Image Sampling & Quantization</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6 my-6">
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-3">📐 Sampling (Spatial)</h4>
+                <p class="text-sm text-slate-600 mb-3">
+                  Converting continuous coordinates (x, y) into discrete pixel positions.
+                </p>
+                <div class="text-xs text-slate-500">
+                  <strong>Example:</strong> A 512×512 image has 262,144 pixels
+                </div>
+              </div>
+
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-3">🎨 Quantization (Intensity)</h4>
+                <p class="text-sm text-slate-600 mb-3">
+                  Converting continuous intensity values into discrete levels.
+                </p>
+                <div class="text-xs text-slate-500">
+                  <strong>Example:</strong> 8-bit = 2⁸ = 256 gray levels (0-255)
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Digital Image Representation</h3>
+            
+            <div class="diagram-box">
+              <h4 class="font-semibold text-slate-800 mb-3">Pixel Matrix Structure</h4>
+              <div class="overflow-x-auto">
+                <div class="inline-block">
+                  <div class="pixel-grid" style="grid-template-columns: repeat(6, 1fr);">
+                    <div class="pixel header"></div>
+                    <div class="pixel header">0</div>
+                    <div class="pixel header">1</div>
+                    <div class="pixel header">2</div>
+                    <div class="pixel header">3</div>
+                    <div class="pixel header">4</div>
+                    
+                    <div class="pixel header">0</div>
+                    <div class="pixel bg-slate-800 text-white">120</div>
+                    <div class="pixel bg-slate-700 text-white">135</div>
+                    <div class="pixel bg-slate-600 text-white">142</div>
+                    <div class="pixel bg-slate-700 text-white">128</div>
+                    <div class="pixel bg-slate-800 text-white">115</div>
+                    
+                    <div class="pixel header">1</div>
+                    <div class="pixel bg-slate-700 text-white">135</div>
+                    <div class="pixel bg-slate-600 text-white">158</div>
+                    <div class="pixel bg-slate-500 text-white">175</div>
+                    <div class="pixel bg-slate-600 text-white">162</div>
+                    <div class="pixel bg-slate-700 text-white">140</div>
+                    
+                    <div class="pixel header">2</div>
+                    <div class="pixel bg-slate-600 text-white">142</div>
+                    <div class="pixel bg-slate-500 text-white">175</div>
+                    <div class="pixel bg-slate-400 text-white">210</div>
+                    <div class="pixel bg-slate-500 text-white">180</div>
+                    <div class="pixel bg-slate-600 text-white">145</div>
+                    
+                    <div class="pixel header">3</div>
+                    <div class="pixel bg-slate-700 text-white">128</div>
+                    <div class="pixel bg-slate-600 text-white">162</div>
+                    <div class="pixel bg-slate-500 text-white">180</div>
+                    <div class="pixel bg-slate-600 text-white">165</div>
+                    <div class="pixel bg-slate-700 text-white">130</div>
+                    
+                    <div class="pixel header">4</div>
+                    <div class="pixel bg-slate-800 text-white">115</div>
+                    <div class="pixel bg-slate-700 text-white">140</div>
+                    <div class="pixel bg-slate-600 text-white">145</div>
+                    <div class="pixel bg-slate-700 text-white">130</div>
+                    <div class="pixel bg-slate-800 text-white">110</div>
+                  </div>
+                  <p class="text-xs text-slate-500 mt-2 text-center">5×5 pixel region with intensity values (0-255)</p>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Color Image Representation</h3>
+            <p class="text-slate-600 mb-3">
+              Color images are typically represented in <strong>RGB</strong> (Red, Green, Blue) format, 
+              where each pixel has three values:
+            </p>
+            <div class="bg-slate-100 p-4 rounded-lg font-mono text-sm">
+              Pixel(x, y) = [R, G, B]<br>
+              Example: [255, 0, 0] = Pure Red<br>
+              Example: [0, 255, 0] = Pure Green<br>
+              Example: [255, 255, 255] = White<br>
+              Example: [0, 0, 0] = Black
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Histogram -->
+      <section id="histogram" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">5</span>
+            Image Histogram
+          </h2>
+
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 mb-4">
+              An <strong>image histogram</strong> is a graphical representation of the intensity distribution in a digital image. 
+              It shows the number of pixels for each intensity value in a given image.
+            </p>
+
+            <div class="formula-box">
+              <strong>Histogram Function:</strong> h(r<sub>k</sub>) = n<sub>k</sub><br>
+              <span class="text-sm">where r<sub>k</sub> is the k-th intensity level and n<sub>k</sub> is the number of pixels with that intensity</span>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Histogram Calculation - Step by Step</h3>
+            
+            <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-4">
+              <h4 class="font-semibold text-slate-800 mb-3">Example: Calculate histogram for this 4×4 image</h4>
+              
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Original Image:</h5>
+                  <div class="pixel-grid" style="grid-template-columns: repeat(4, 1fr); font-size: 0.7rem;">
+                    <div class="pixel bg-slate-300">50</div>
+                    <div class="pixel bg-slate-400">100</div>
+                    <div class="pixel bg-slate-500">150</div>
+                    <div class="pixel bg-slate-600">200</div>
+                    <div class="pixel bg-slate-400">100</div>
+                    <div class="pixel bg-slate-500">150</div>
+                    <div class="pixel bg-slate-500">150</div>
+                    <div class="pixel bg-slate-700">250</div>
+                    <div class="pixel bg-slate-300">50</div>
+                    <div class="pixel bg-slate-500">150</div>
+                    <div class="pixel bg-slate-600">200</div>
+                    <div class="pixel bg-slate-400">100</div>
+                    <div class="pixel bg-slate-500">150</div>
+                    <div class="pixel bg-slate-600">200</div>
+                    <div class="pixel bg-slate-700">250</div>
+                    <div class="pixel bg-slate-400">100</div>
+                  </div>
+                </div>
+
+                <div class="col-span-1 md:col-span-3">
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Trace of Calculation:</h5>
+                  <div class="space-y-2 text-sm">
+                    <div class="trace-step">
+                      <strong>Step 1:</strong> Initialize histogram array h[0...255] = 0
+                    </div>
+                    <div class="trace-step">
+                      <strong>Step 2:</strong> Scan each pixel and increment corresponding bin:<br>
+                      <span class="font-mono text-xs">
+                        Pixel[0,0]=50 → h[50]++<br>
+                        Pixel[0,1]=100 → h[100]++<br>
+                        Pixel[0,2]=150 → h[150]++<br>
+                        ... continue for all 16 pixels
+                      </span>
+                    </div>
+                    <div class="trace-step">
+                      <strong>Step 3:</strong> Final histogram values:<br>
+                      <span class="font-mono text-xs bg-white p-2 rounded block mt-1">
+                        h[50] = 2 pixels<br>
+                        h[100] = 4 pixels<br>
+                        h[150] = 5 pixels<br>
+                        h[200] = 3 pixels<br>
+                        h[250] = 2 pixels
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Histogram Interpretation</h3>
+            
+            <div class="grid md:grid-cols-3 gap-4 my-6">
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">🌓 Dark Image</h4>
+                <div class="h-20 bg-gradient-to-r from-slate-800 to-slate-200 rounded mb-2"></div>
+                <p class="text-xs text-slate-600">Histogram concentrated on the left (low intensity values)</p>
+              </div>
+              
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">☀️ Bright Image</h4>
+                <div class="h-20 bg-gradient-to-r from-slate-200 to-white rounded mb-2"></div>
+                <p class="text-xs text-slate-600">Histogram concentrated on the right (high intensity values)</p>
+              </div>
+              
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">⚖️ Good Contrast</h4>
+                <div class="h-20 bg-gradient-to-r from-slate-800 via-slate-400 to-white rounded mb-2"></div>
+                <p class="text-xs text-slate-600">Histogram spread across the entire range (0-255)</p>
+              </div>
+            </div>
+
+            <div class="example-box">
+              <h4 class="font-semibold text-green-900 mb-2">💡 Applications of Histogram:</h4>
+              <ul class="text-sm text-green-800 space-y-1">
+                <li>• <strong>Image Enhancement:</strong> Histogram equalization to improve contrast</li>
+                <li>• <strong>Thresholding:</strong> Finding optimal threshold values for segmentation</li>
+                <li>• <strong>Image Analysis:</strong> Understanding brightness and contrast distribution</li>
+                <li>• <strong>Quality Assessment:</strong> Detecting over/under-exposed images</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Contrast Stretching -->
+      <section id="contrast-stretching" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">6</span>
+            Contrast Stretching
+          </h2>
+
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 mb-4">
+              <strong>Contrast stretching</strong> (also called normalization) is a technique to improve the contrast in an image 
+              by stretching the range of intensity values to span the full available range (0-255).
+            </p>
+
+            <div class="formula-box">
+              <strong>Contrast Stretching Formula:</strong><br>
+              <span class="text-lg">s = T(r) = (r - r<sub>min</sub>) × 255 / (r<sub>max</sub> - r<sub>min</sub>)</span><br>
+              <span class="text-sm">where r = input pixel, s = output pixel, r<sub>min</sub>/r<sub>max</sub> = min/max intensity in image</span>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Detailed Example with Trace</h3>
+            
+            <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-4">
+              <h4 class="font-semibold text-slate-800 mb-3">Problem: Apply contrast stretching to this 3×3 image</h4>
+              
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Original Image:</h5>
+                  <div class="pixel-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="pixel bg-slate-400">60</div>
+                    <div class="pixel bg-slate-500">90</div>
+                    <div class="pixel bg-slate-400">70</div>
+                    <div class="pixel bg-slate-500">100</div>
+                    <div class="pixel bg-slate-600">120</div>
+                    <div class="pixel bg-slate-500">110</div>
+                    <div class="pixel bg-slate-400">80</div>
+                    <div class="pixel bg-slate-500">95</div>
+                    <div class="pixel bg-slate-400">75</div>
+                  </div>
+                  <p class="text-xs text-slate-500 mt-2">
+                    r<sub>min</sub> = 60, r<sub>max</sub> = 120<br>
+                    Range = 60 (poor contrast)
+                  </p>
+                </div>
+
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Step-by-Step Calculation:</h5>
+                  <div class="space-y-2 text-xs">
+                    <div class="trace-step">
+                      <strong>Step 1:</strong> Find min and max<br>
+                      r<sub>min</sub> = 60, r<sub>max</sub> = 120
+                    </div>
+                    <div class="trace-step">
+                      <strong>Step 2:</strong> Apply formula to each pixel:<br>
+                      <span class="font-mono">
+                        s = (r - 60) × 255 / (120 - 60)<br>
+                        s = (r - 60) × 4.25
+                      </span>
+                    </div>
+                    <div class="trace-step">
+                      <strong>Step 3:</strong> Calculate each pixel:<br>
+                      <span class="font-mono bg-white p-2 rounded block">
+                        Pixel 60: (60-60)×4.25 = 0<br>
+                        Pixel 90: (90-60)×4.25 = 127.5 ≈ 128<br>
+                        Pixel 120: (120-60)×4.25 = 255
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <h5 class="font-medium text-sm text-slate-700 mb-2">Result After Contrast Stretching:</h5>
+                <div class="pixel-grid" style="grid-template-columns: repeat(3, 1fr);">
+                  <div class="pixel bg-black text-white">0</div>
+                  <div class="pixel bg-slate-500 text-white">128</div>
+                  <div class="pixel bg-slate-300">42</div>
+                  <div class="pixel bg-slate-600 text-white">170</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-slate-700 text-white">212</div>
+                  <div class="pixel bg-slate-200">85</div>
+                  <div class="pixel bg-slate-500 text-white">149</div>
+                  <div class="pixel bg-slate-300">64</div>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">
+                  New range: 0-255 (full contrast!)
+                </p>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Python Implementation</h3>
+            
+            <div class="code-block my-4">
+import numpy as np
+import cv2
+
+def contrast_stretching(image):
+    """
+    Apply contrast stretching to grayscale image
+    """
+    # Find min and max intensity values
+    r_min = np.min(image)
+    r_max = np.max(image)
+    
+    # Apply contrast stretching formula
+    stretched = (image - r_min) * 255 / (r_max - r_min)
+    
+    # Convert to uint8
+    stretched = np.uint8(stretched)
+    
+    return stretched
+
+# Example usage
+img = cv2.imread('low_contrast.jpg', cv2.IMREAD_GRAYSCALE)
+enhanced = contrast_stretching(img)
+cv2.imwrite('enhanced.jpg', enhanced)
+            </div>
+
+            <div class="example-box">
+              <h4 class="font-semibold text-green-900 mb-2">✅ When to Use Contrast Stretching:</h4>
+              <ul class="text-sm text-green-800 space-y-1">
+                <li>• Images with poor contrast (narrow intensity range)</li>
+                <li>• Medical images (X-rays, MRI) for better visibility</li>
+                <li>• Satellite imagery for feature enhancement</li>
+                <li>• Preprocessing step before other operations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Thresholding -->
+      <section id="thresholding" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">7</span>
+            Thresholding & Binarization
+          </h2>
+
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 mb-4">
+              <strong>Thresholding</strong> is the simplest method of image segmentation. It creates a binary image 
+              (black and white) from a grayscale image by setting a threshold value.
+            </p>
+
+            <div class="formula-box">
+              <strong>Binary Thresholding:</strong><br>
+              <span class="text-lg">g(x,y) = { 255 if f(x,y) ≥ T<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 if f(x,y) &lt; T }</span><br>
+              <span class="text-sm">where T = threshold value, f = input image, g = output binary image</span>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Types of Thresholding</h3>
+            
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+              <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h4 class="font-semibold text-blue-900 mb-2">1. Global Thresholding</h4>
+                <p class="text-sm text-blue-800 mb-2">Single threshold value for entire image</p>
+                <div class="font-mono text-xs bg-white p-2 rounded">
+                  T = 127 (fixed)<br>
+                  if pixel ≥ 127 → 255<br>
+                  else → 0
+                </div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h4 class="font-semibold text-green-900 mb-2">2. Adaptive Thresholding</h4>
+                <p class="text-sm text-green-800 mb-2">Different threshold for each pixel based on neighborhood</p>
+                <div class="font-mono text-xs bg-white p-2 rounded">
+                  T(x,y) = mean of<br>
+                  neighborhood - C<br>
+                  (C = constant)
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Detailed Example: Global Thresholding</h3>
+            
+            <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-4">
+              <h4 class="font-semibold text-slate-800 mb-3">Example: Apply threshold T = 100</h4>
+              
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Original Grayscale Image:</h5>
+                  <div class="pixel-grid" style="grid-template-columns: repeat(4, 1fr); font-size: 0.7rem;">
+                    <div class="pixel bg-slate-300">80</div>
+                    <div class="pixel bg-slate-500">120</div>
+                    <div class="pixel bg-slate-400">95</div>
+                    <div class="pixel bg-slate-600">150</div>
+                    <div class="pixel bg-slate-600">180</div>
+                    <div class="pixel bg-slate-400">110</div>
+                    <div class="pixel bg-slate-300">70</div>
+                    <div class="pixel bg-slate-700">200</div>
+                    <div class="pixel bg-slate-500">130</div>
+                    <div class="pixel bg-slate-400">90</div>
+                    <div class="pixel bg-slate-700">210</div>
+                    <div class="pixel bg-slate-500">140</div>
+                    <div class="pixel bg-slate-300">60</div>
+                    <div class="pixel bg-slate-600">160</div>
+                    <div class="pixel bg-slate-400">105</div>
+                    <div class="pixel bg-slate-500">125</div>
+                  </div>
+                </div>
+
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Trace of Thresholding (T=100):</h5>
+                  <div class="space-y-2 text-xs">
+                    <div class="trace-step">
+                      <strong>Rule:</strong> If pixel ≥ 100 → 255 (white)<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If pixel &lt; 100 → 0 (black)
+                    </div>
+                    <div class="trace-step">
+                      <strong>Pixel-by-pixel processing:</strong><br>
+                      <span class="font-mono bg-white p-2 rounded block">
+                        80 &lt; 100 → 0<br>
+                        120 ≥ 100 → 255<br>
+                        95 &lt; 100 → 0<br>
+                        150 ≥ 100 → 255<br>
+                        ... continue for all pixels
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <h5 class="font-medium text-sm text-slate-700 mb-2">Result - Binary Image:</h5>
+                <div class="pixel-grid" style="grid-template-columns: repeat(4, 1fr);">
+                  <div class="pixel bg-black text-white">0</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-black text-white">0</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-black text-white">0</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-black text-white">0</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-black text-white">0</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                  <div class="pixel bg-white text-black border">255</div>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Otsu's Automatic Thresholding</h3>
+            <p class="text-slate-600 mb-3">
+              <strong>Otsu's method</strong> automatically finds the optimal threshold value by minimizing intra-class variance 
+              (variance within foreground and background).
+            </p>
+
+            <div class="code-block my-4">
+                <pre>
+import cv2
+import numpy as np
+
+# Method 1: Simple Global Thresholding
+img = cv2.imread('image.jpg', cv2.IMREAD_GRAYSCALE)
+_, thresh1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+
+# Method 2: Otsu's Automatic Thresholding
+_, thresh2 = cv2.threshold(img, 0, 255, 
+                           cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+print(f"Otsu threshold value: {thresh2}")
+
+# Method 3: Adaptive Thresholding
+thresh3 = cv2.adaptiveThreshold(img, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY, 11, 2)
+</pre>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Applications of Thresholding</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">📄 Document Processing</h4>
+                <p class="text-sm text-slate-600">Text extraction, OCR preprocessing, signature detection</p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">🔬 Medical Imaging</h4>
+                <p class="text-sm text-slate-600">Tumor segmentation, cell counting, organ detection</p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">🏭 Industrial Inspection</h4>
+                <p class="text-sm text-slate-600">Defect detection, quality control, object counting</p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">🚗 Object Detection</h4>
+                <p class="text-sm text-slate-600">Foreground/background separation, motion detection</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 8: Practical Examples -->
+      <section id="practical" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">8</span>
+            Complete Practical Example
+          </h2>
+
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 mb-4">
+              Let's combine all techniques in a complete image processing pipeline:
+            </p>
+
+            <div class="code-block my-4">
+                <pre>
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def complete_image_processing_pipeline(image_path):
+    """
+    Complete pipeline demonstrating:
+    1. Image loading and histogram
+    2. Contrast stretching
+    3. Thresholding
+    """
+    
+    # Step 1: Load image
+    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    
+    if img is None:
+        raise ValueError("Image not found!")
+    
+    print(f"Original image shape: {img.shape}")
+    print(f"Original intensity range: [{img.min()}, {img.max()}]")
+    
+    # Step 2: Calculate and display histogram
+    hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+    
+    # Step 3: Apply contrast stretching
+    img_min = img.min()
+    img_max = img.max()
+    stretched = ((img - img_min) * 255 / (img_max - img_min)).astype(np.uint8)
+    
+    print(f"After stretching range: [{stretched.min()}, {stretched.max()}]")
+    
+    # Step 4: Apply Otsu's thresholding
+    _, binary = cv2.threshold(stretched, 0, 255, 
+                              cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    
+    # Step 5: Display results
+    fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    
+    axes[0, 0].imshow(img, cmap='gray')
+    axes[0, 0].set_title('Original Image')
+    axes[0, 0].axis('off')
+    
+    axes[0, 1].plot(hist)
+    axes[0, 1].set_title('Histogram')
+    axes[0, 1].set_xlim([0, 256])
+    
+    axes[1, 0].imshow(stretched, cmap='gray')
+    axes[1, 0].set_title('Contrast Stretched')
+    axes[1, 0].axis('off')
+    
+    axes[1, 1].imshow(binary, cmap='gray')
+    axes[1, 1].set_title('Binary (Otsu)')
+    axes[1, 1].axis('off')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    return img, stretched, binary
+
+# Usage
+original, enhanced, binary = complete_image_processing_pipeline('sample.jpg')
+</pre>
+            </div>
+
+            <!-- <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 my-6">
+              <h4 class="font-semibold text-amber-900 mb-2">📝 Assignment Exercise:</h4>
+              <ol class="text-sm text-amber-800 space-y-2 list-decimal list-inside">
+                <li>Load a grayscale image and compute its histogram manually (without OpenCV's calcHist)</li>
+                <li>Implement contrast stretching from scratch using the formula</li>
+                <li>Apply three different thresholding methods and compare results</li>
+                <li>Find the optimal threshold using Otsu's method and verify with OpenCV</li>
+                <li>Process a low-contrast medical image and enhance it for better visualization</li>
+              </ol>
+            </div> -->
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 class="font-semibold text-blue-900 mb-2">🎓 Key Takeaways:</h4>
+              <ul class="text-sm text-blue-800 space-y-2">
+                <li>✓ <strong>Computer Vision</strong> focuses on understanding visual data, not just processing it</li>
+                <li>✓ <strong>Histograms</strong> reveal the intensity distribution and help identify contrast issues</li>
+                <li>✓ <strong>Contrast stretching</strong> expands the intensity range to improve visibility</li>
+                <li>✓ <strong>Thresholding</strong> converts grayscale to binary for segmentation tasks</li>
+                <li>✓ <strong>Otsu's method</strong> automatically finds the optimal threshold value</li>
+                <li>✓ These are <strong>fundamental preprocessing steps</strong> for advanced CV tasks</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Summary Box -->
+      <section class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl p-6 md:p-8">
+        <h2 class="text-2xl font-bold mb-4">📚 Summary</h2>
+        <div class="grid md:grid-cols-2 gap-6 text-sm">
+          <div>
+            <h3 class="font-semibold text-blue-300 mb-2">Fundamental Concepts</h3>
+            <ul class="space-y-1 text-slate-300">
+              <li>• CV extracts meaning from images</li>
+              <li>• Digital images are 2D arrays of pixels</li>
+              <li>• Histogram shows intensity distribution</li>
+              <li>• Sampling = spatial discretization</li>
+              <li>• Quantization = intensity discretization</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold text-green-300 mb-2">Key Techniques</h3>
+            <ul class="space-y-1 text-slate-300">
+              <li>• Contrast stretching: Expand intensity range</li>
+              <li>• Thresholding: Convert to binary</li>
+              <li>• Otsu's method: Automatic threshold</li>
+              <li>• Histogram equalization: Improve contrast</li>
+              <li>• Preprocessing enables advanced CV</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-8 mt-12">
+    <div class="container mx-auto px-4 max-w-6xl text-center text-sm text-slate-600">
+      <p class="mb-2"><strong>CS-1013: Computer Vision</strong> • Lecture Notes Set 1</p>
+      <p>Department of Computer Science • The Islamia University of Bahawalpur</p>
+      <p class="mt-2">Instructor: Abdullah • abdullah.soomro@iub.edu.pk</p>
+      <a href="index.html" class="inline-block mt-4 text-blue-600 hover:underline">← Back to Course Homepage</a>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS-1013: Lecture Notes | Computer Vision</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+    .code-block { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.875rem; }
+    .nav-link:hover { background-color: #f1f5f9; }
+    .toc a { display: block; padding: 0.4rem 0.6rem; border-radius: 0.375rem; color: #475569; transition: all 0.15s; }
+    .toc a:hover { background-color: #f1f5f9; color: #0f172a; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-700 antialiased">
+
+  <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-2 text-slate-800 font-medium hover:text-slate-600">
+        ← Back to CS-1013 Course Site
+      </a>
+      <div class="text-sm text-slate-500">Lecture Notes • Abdullah</div>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-b from-slate-100 to-slate-50 border-b border-slate-200">
+    <div class="container mx-auto px-4 py-10 max-w-5xl">
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">Lecture Notes</h1>
+      <p class="text-slate-600">Covered material + upcoming topics for CS-1013: Computer Vision</p>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-6xl grid md:grid-cols-4 gap-8">
+    <!-- Table of Contents -->
+    <aside class="md:col-span-1">
+      <div class="sticky top-24 toc bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+        <h3 class="font-semibold text-slate-800 mb-3 text-sm uppercase tracking-wider">Contents</h3>
+        <a href="#fundamentals">1. CV Fundamentals & Image Processing</a>
+        <a href="#convolution">2. Convolution & Feature Maps</a>
+        <a href="#networks">3. ANN & CNN Architectures</a>
+        <a href="#training">4. Training, Loss & Evaluation</a>
+        <a href="#upcoming">5. Upcoming Topics (Weeks 11-15)</a>
+      </div>
+    </aside>
+
+    <!-- Notes Content -->
+    <div class="md:col-span-3 space-y-10">
+      
+      <section id="fundamentals" class="scroll-mt-28">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">1. Computer Vision Fundamentals & Image Processing</h2>
+          <div class="space-y-4 text-sm text-slate-700">
+            <p><strong>AI vs Computer Vision:</strong> AI is the broad field of intelligent systems. CV is a subfield focused on enabling machines to interpret visual data. Not all AI uses vision, but modern CV heavily relies on AI.</p>
+            <p><strong>Image Processing vs CV vs Graphics:</strong> <br>• <em>Image Processing:</em> Input = Image, Output = Enhanced/Modified Image <br>• <em>Computer Vision:</em> Input = Image, Output = Information/Understanding <br>• <em>Computer Graphics:</em> Input = Data/Models, Output = Rendered Image</p>
+            <h4 class="font-medium text-slate-800 mt-4">Core Operations</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Contrast Stretching:</strong> Linear mapping of intensity values to expand dynamic range</li>
+              <li><strong>Thresholding & Binarization:</strong> Convert grayscale to binary (0/255) using global or adaptive thresholds</li>
+              <li><strong>Histogram Equalization:</strong> Redistribute pixel intensities for better contrast</li>
+            </ul>
+            <div class="code-block"> <a href="lecture-1-cv-fundamentals.html">Click Here for more details</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="convolution" class="scroll-mt-28">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">2. Convolution Operation & Feature Maps</h2>
+          <div class="space-y-4 text-sm text-slate-700">
+            <p><strong>Convolution:</strong> Sliding a kernel/filter over an image to extract spatial features (edges, textures, patterns). Mathematically: element-wise multiplication + summation.</p>
+            <p><strong>Key Parameters:</strong></p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Stride:</strong> Step size of kernel movement</li>
+              <li><strong>Padding:</strong> Adding border pixels (Zero/Valid/Same) to control output size</li>
+              <li><strong>Kernel/Filter:</strong> Learnable weights (e.g., 3×3, 5×5)</li>
+            </ul>
+            <h4 class="font-medium text-slate-800 mt-4">Feature Map Size Formula</h4>
+            <div class="bg-slate-50 p-3 rounded border border-slate-200 font-mono text-xs">
+              Output Size = ⌊(Input - Kernel + 2×Padding) / Stride⌋ + 1
+            </div>
+
+            <div class="code-block"><a href="lecture-notes-set2.html">Click Here for more details</a></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="networks" class="scroll-mt-28">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">3. Neural Networks: ANN & CNN</h2>
+          <div class="space-y-4 text-sm text-slate-700">
+            <p><strong>Why ANN → CNN?</strong> Fully connected ANNs flatten images, losing spatial hierarchy. CNNs preserve spatial relationships via convolutional layers, pooling, and local receptive fields.</p>
+            <h4 class="font-medium text-slate-800 mt-4">CNN Architecture Stack</h4>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div class="bg-slate-50 p-2 rounded border text-center">Input Image</div>
+              <div class="bg-blue-50 p-2 rounded border text-center">Conv Layers</div>
+              <div class="bg-amber-50 p-2 rounded border text-center">Pooling</div>
+              <div class="bg-green-50 p-2 rounded border text-center">FC Layers</div>
+            </div>
+            <h4 class="font-medium text-slate-800 mt-4">Forward Pass (Intuition)</h4>
+            <p>Input → Conv + Activation → Pool → Flatten → Dense Layers → Softmax/Sigmoid → Prediction</p>
+            <h4 class="font-medium text-slate-800 mt-4">Backpropagation (Conceptual)</h4>
+            <p>1. Compute loss (prediction vs ground truth) <br>2. Calculate gradients ∂Loss/∂Weights using chain rule <br>3. Update weights: W = W - η × ∇W <br>4. Repeat until loss stabilizes</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="training" class="scroll-mt-28">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">4. Training, Loss & Evaluation</h2>
+          <div class="space-y-4 text-sm text-slate-700">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-slate-50 p-3 rounded border">
+                <h4 class="font-medium text-slate-800 mb-1">Loss Functions</h4>
+                <ul class="space-y-1">
+                  <li><strong>BCE:</strong> Binary Classification (0/1)</li>
+                  <li><strong>CCE:</strong> Multi-class Classification</li>
+                  <li><strong>MSE:</strong> Regression tasks</li>
+                </ul>
+              </div>
+              <div class="bg-slate-50 p-3 rounded border">
+                <h4 class="font-medium text-slate-800 mb-1">Optimizers</h4>
+                <ul class="space-y-1">
+                  <li><strong>SGD:</strong> Simple, slow convergence</li>
+                  <li><strong>Adam:</strong> Adaptive learning rates, faster, default choice</li>
+                </ul>
+              </div>
+            </div>
+            <h4 class="font-medium text-slate-800 mt-4">Key Metrics</h4>
+            <table class="w-full text-xs border-collapse">
+              <thead class="bg-slate-100"><tr><th class="p-2 border">Metric</th><th class="p-2 border">Formula</th><th class="p-2 border">Use Case</th></tr></thead>
+              <tbody class="divide-y">
+                <tr><td class="p-2 border">Accuracy</td><td class="p-2 border">(TP+TN)/Total</td><td class="p-2 border">Balanced datasets</td></tr>
+                <tr><td class="p-2 border">Precision</td><td class="p-2 border">TP/(TP+FP)</td><td class="p-2 border">Minimize false positives</td></tr>
+                <tr><td class="p-2 border">Recall</td><td class="p-2 border">TP/(TP+FN)</td><td class="p-2 border">Minimize false negatives</td></tr>
+                <tr><td class="p-2 border">F1-Score</td><td class="p-2 border">2×(P×R)/(P+R)</td><td class="p-2 border">Imbalanced data</td></tr>
+              </tbody>
+            </table>
+            <h4 class="font-medium text-slate-800 mt-4">Bias-Variance & Generalization</h4>
+            <div class="grid md:grid-cols-3 gap-3 text-xs">
+              <div class="bg-red-50 p-2 rounded border"><strong>High Bias (Underfit)</strong><br>Model too simple. Poor train & test accuracy. Fix: increase capacity, train longer.</div>
+              <div class="bg-amber-50 p-2 rounded border"><strong>High Variance (Overfit)</strong><br>Model memorizes data. Great train, poor test accuracy. Fix: regularization, dropout, more data.</div>
+              <div class="bg-green-50 p-2 rounded border"><strong>Good Generalization</strong><br>Balanced bias-variance. Strong performance on unseen data.</div>
+            </div>
+            <div class="code-block mt-3">
+# PyTorch Training Loop Skeleton
+criterion = nn.BCEWithLogitsLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+
+for epoch in range(num_epochs):
+    model.train()
+    for X, y in dataloader:
+        optimizer.zero_grad()
+        out = model(X)
+        loss = criterion(out, y)
+        loss.backward()
+        optimizer.step()
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="upcoming" class="scroll-mt-28">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-900 mb-4">5. Upcoming Topics (Weeks 11-15)</h2>
+          <ul class="space-y-3 text-sm text-slate-700">
+            <li class="flex gap-3"><span class="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs self-center">W11</span><span><strong>Advanced CNNs:</strong> ResNet, Skip Connections, EfficientNet, Batch Normalization</span></li>
+            <li class="flex gap-3"><span class="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs self-center">W12</span><span><strong>Object Detection:</strong> YOLO architecture, R-CNN family, NMS, mAP evaluation</span></li>
+            <li class="flex gap-3"><span class="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs self-center">W13</span><span><strong>Semantic Segmentation:</strong> FCN, U-Net, Encoder-Decoder design, IoU metric</span></li>
+            <li class="flex gap-3"><span class="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs self-center">W14</span><span><strong>Transfer Learning & ViTs:</strong> Fine-tuning pretrained models, Vision Transformers, Attention mechanism</span></li>
+            <li class="flex gap-3"><span class="font-mono bg-slate-100 px-2 py-0.5 rounded text-xs self-center">W15</span><span><strong>Final Project:</strong> End-to-end pipeline, deployment basics, course wrap-up</span></li>
+          </ul>
+          <p class="text-xs text-slate-500 mt-4 italic">Notes for upcoming weeks will be updated after each lecture. Check back regularly or follow IUB LMS announcements.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="bg-slate-100 border-t border-slate-200 py-6 text-center text-sm text-slate-500">
+    <p>CS-1013: Computer Vision • Dept. of Computer Science, IUB • Instructor: Abdullah</p>
+    <p class="mt-1"><a href="index.html" class="text-blue-600 hover:underline">← Return to Course Homepage</a></p>
+  </footer>
+</body>
+</html>

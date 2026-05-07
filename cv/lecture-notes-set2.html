@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS-1013: Lecture Notes Set 2 - Convolution & Feature Maps</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+    .code-block { 
+      background: #1e293b; 
+      color: #e2e8f0; 
+      padding: 1.5rem; 
+      border-radius: 0.5rem; 
+      overflow-x: auto; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.875rem;
+      line-height: 1.6;
+      white-space: pre;
+      tab-size: 4;
+    }
+    .diagram-box { 
+      background: #f8fafc; 
+      border: 2px solid #cbd5e1; 
+      border-radius: 0.5rem; 
+      padding: 1.5rem; 
+      margin: 1rem 0;
+    }
+    .trace-step { 
+      background: #f0f9ff; 
+      border-left: 4px solid #0284c7; 
+      padding: 1rem; 
+      margin: 0.75rem 0;
+      border-radius: 0 0.375rem 0.375rem 0;
+    }
+    .formula-box { 
+      background: #fef3c7; 
+      border: 1px solid #f59e0b; 
+      padding: 1rem; 
+      border-radius: 0.375rem; 
+      text-align: center;
+      font-size: 1.1rem;
+      margin: 1rem 0;
+    }
+    .example-box { 
+      background: #dcfce7; 
+      border: 1px solid #22c55e; 
+      padding: 1rem; 
+      border-radius: 0.375rem; 
+      margin: 1rem 0;
+    }
+    .comparison-table th, .comparison-table td { 
+      border: 1px solid #cbd5e1; 
+      padding: 0.75rem; 
+      text-align: left;
+    }
+    .comparison-table th { background: #f1f5f9; }
+    .highlight { background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%); padding: 0 0.25rem; }
+    nav.toc a { 
+      display: block; 
+      padding: 0.5rem 0.75rem; 
+      border-radius: 0.375rem; 
+      color: #475569; 
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+    nav.toc a:hover { background-color: #f1f5f9; color: #0f172a; }
+    .pixel-grid { 
+      display: inline-grid; 
+      gap: 1px; 
+      background: #cbd5e1; 
+      border: 2px solid #475569;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+    .pixel { 
+      background: white; 
+      padding: 0.5rem; 
+      text-align: center;
+      min-width: 2rem;
+    }
+    .pixel.header { background: #e2e8f0; font-weight: bold; }
+    .kernel-cell { 
+      background: #dbeafe; 
+      border: 1px solid #3b82f6; 
+      font-weight: 600;
+    }
+    .output-cell { 
+      background: #dcfce7; 
+      border: 2px solid #22c55e; 
+      font-weight: 700;
+    }
+    .kw { color: #c678dd; }
+    .fn { color: #61afef; }
+    .str { color: #98c379; }
+    .cmt { color: #5c6370; font-style: italic; }
+    .num { color: #d19a66; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-700 antialiased">
+
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Back to Course
+        </a>
+        <span class="text-slate-300">|</span>
+        <span class="text-sm text-slate-600">CS-1013 • Lecture Notes Set 2</span>
+      </div>
+      <div class="text-sm font-medium text-slate-700">Convolution & Feature Maps</div>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-slate-800 to-slate-900 text-white py-12">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <div class="inline-block px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-4">
+        Lecture Notes Set 2 • Weeks 5-6
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">Convolution Operation & Feature Maps</h1>
+      <p class="text-slate-300 text-lg max-w-3xl">
+        Understanding the core mathematical operation behind computer vision: 
+        how convolution extracts features, the role of stride and padding, 
+        and how feature maps are generated.
+      </p>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8 max-w-7xl grid md:grid-cols-4 gap-8">
+    <!-- Table of Contents -->
+    <aside class="md:col-span-1">
+      <nav class="toc sticky top-24 bg-white rounded-lg border border-slate-200 p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider border-b border-slate-200 pb-2">Table of Contents</h3>
+        <a href="#intro">1. What is Convolution?</a>
+        <a href="#math-def">2. Mathematical Definition</a>
+        <a href="#properties">3. Convolution Properties</a>
+        <a href="#kernels">4. Kernel Design & Types</a>
+        <a href="#stride">5. Stride Parameter</a>
+        <a href="#padding">6. Padding Strategies</a>
+        <a href="#feature-maps">7. Feature Map Generation</a>
+        <a href="#output-size">8. Output Size Formula</a>
+        <a href="#multi-channel">9. Multi-Channel Convolution</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="md:col-span-3 space-y-10">
+      
+      <!-- Section 1: Introduction -->
+      <section id="intro" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">1</span>
+            What is Convolution?
+          </h2>
+          
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 leading-relaxed mb-4">
+              <strong class="text-slate-800">Convolution</strong> is a mathematical operation that combines two functions to produce a third function expressing how the shape of one is modified by the other. In computer vision, convolution is used to extract <strong>local features</strong> (edges, textures, patterns) from images by sliding a small matrix called a <strong>kernel</strong> or <strong>filter</strong> over the input image.
+            </p>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+              <p class="text-blue-900 font-medium mb-2">🎯 Intuition:</p>
+              <p class="text-blue-800">"Convolution is like a flashlight scanning an image—wherever the light shines, it highlights specific patterns based on the filter's design."</p>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Why Convolution in CV?</h3>
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">✅ Key Advantages</h4>
+                <ul class="text-sm text-slate-600 space-y-1">
+                  <li>• <strong>Local Connectivity:</strong> Each output depends only on a small region</li>
+                  <li>• <strong>Parameter Sharing:</strong> Same kernel applied everywhere</li>
+                  <li>• <strong>Translation Invariance:</strong> Detects features regardless of position</li>
+                  <li>• <strong>Hierarchical Features:</strong> Simple → complex patterns through layers</li>
+                </ul>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h4 class="font-semibold text-slate-800 mb-2">🔧 What It Extracts</h4>
+                <ul class="text-sm text-slate-600 space-y-1">
+                  <li>• Edges (horizontal, vertical, diagonal)</li>
+                  <li>• Corners and keypoints</li>
+                  <li>• Textures and patterns</li>
+                  <li>• Blobs and regions of interest</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Mathematical Definition -->
+      <section id="math-def" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">2</span>
+            Mathematical Definition of 2D Convolution
+          </h2>
+
+          <div class="prose prose-slate max-w-none">
+            <p class="text-slate-600 mb-4">
+              For a 2D input image <span class="font-mono bg-slate-100 px-1 rounded">I</span> and kernel <span class="font-mono bg-slate-100 px-1 rounded">K</span>, the discrete convolution at position <span class="font-mono">(i, j)</span> is:
+            </p>
+
+            <div class="formula-box">
+              <strong>2D Convolution Formula:</strong><br>
+              <span class="text-lg">(I * K)[i, j] = Σ<sub>m</sub> Σ<sub>n</sub> I[i+m, j+n] · K[m, n]</span><br>
+              <span class="text-sm">where m, n iterate over kernel dimensions</span>
+            </div>
+
+            <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Step-by-Step Visual Trace</h3>
+            
+            <div class="diagram-box my-6">
+              <h4 class="font-semibold text-slate-800 mb-4">Example: 5×5 Input, 3×3 Kernel, Stride=1, Padding=0</h4>
+              
+              <div class="grid md:grid-cols-3 gap-4 items-start">
+                <!-- Input Image -->
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Input Image (5×5):</h5>
+                  <p class="text-xs text-slate-500 mb-2">Vertical edge: dark → bright transition</p>
+                  <div class="pixel-grid" style="grid-template-columns: repeat(5, 1fr);">
+                    <div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div>
+                    <div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div>
+                    <div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div>
+                    <div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div>
+                    <div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-slate-800 text-white">0</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div><div class="pixel bg-white text-black border">1</div>
+                  </div>
+                </div>
+              
+                <!-- Kernel -->
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Kernel (3×3):</h5>
+                  <p class="text-xs text-slate-500 mb-2">Vertical edge detector (Sobel-X style)</p>
+                  <div class="pixel-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="pixel kernel-cell bg-red-100">-1</div><div class="pixel kernel-cell">0</div><div class="pixel kernel-cell bg-green-100">1</div>
+                    <div class="pixel kernel-cell bg-red-100">-1</div><div class="pixel kernel-cell">0</div><div class="pixel kernel-cell bg-green-100">1</div>
+                    <div class="pixel kernel-cell bg-red-100">-1</div><div class="pixel kernel-cell">0</div><div class="pixel kernel-cell bg-green-100">1</div>
+                  </div>
+                  <p class="text-xs text-slate-500 mt-2 text-center">Computes: right − left</p>
+                </div>
+              
+                <!-- Output -->
+                <div>
+                  <h5 class="font-medium text-sm text-slate-700 mb-2">Output Feature Map (3×3):</h5>
+                  <p class="text-xs text-slate-500 mb-2">High values = strong vertical edge</p>
+                  <div class="pixel-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="pixel output-cell bg-orange-200">3</div><div class="pixel output-cell bg-orange-200">3</div><div class="pixel output-cell bg-slate-200">0</div>
+                    <div class="pixel output-cell bg-orange-200">3</div><div class="pixel output-cell bg-orange-200">3</div><div class="pixel output-cell bg-slate-200">0</div>
+                    <div class="pixel output-cell bg-orange-200">3</div><div class="pixel output-cell bg-orange-200">3</div><div class="pixel output-cell bg-slate-200">0</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Detailed Calculation Trace -->
+              <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 mt-4">
+                <h4 class="font-semibold text-slate-800 mb-3">🔍 Step-by-Step Calculation for Output[0,0]</h4>
+                <div class="space-y-3 text-sm">
+                  <div class="trace-step">
+                    <strong>Step 1:</strong> Extract 3×3 region from input (top-left):<br>
+                    <span class="font-mono text-xs bg-white p-2 rounded block mt-1">
+                      [0 0 1]<br>
+                      [0 0 1]<br>
+                      [0 0 1]
+                    </span>
+                  </div>
+                  <div class="trace-step">
+                    <strong>Step 2:</strong> Element-wise multiplication with kernel:<br>
+                    <span class="font-mono text-xs bg-white p-2 rounded block mt-1">
+                      [0×-1, 0×0, 1×1] = [0, 0, 1]<br>
+                      [0×-1, 0×0, 1×1] = [0, 0, 1]<br>
+                      [0×-1, 0×0, 1×1] = [0, 0, 1]
+                    </span>
+                  </div>
+                  <div class="trace-step">
+                    <strong>Step 3:</strong> Sum all products:<br>
+                    <span class="font-mono text-xs bg-white p-2 rounded block mt-1">
+                      0+0+1 + 0+0+1 + 0+0+1 = <strong>3</strong>
+                    </span>
+                  </div>
+                  <div class="trace-step bg-green-50 border-green-300">
+                    <strong>✅ Interpretation:</strong> Value = 3 indicates a strong vertical edge (dark→bright transition) at this location.
+                  </div>
+                </div>
+              </div>
+              
+             
+            </div>
+
+          
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Properties -->
+      <section id="properties" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">3</span>
+            Convolution Properties
+          </h2>
+
+          <div class="grid md:grid-cols-2 gap-4 my-6">
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">🔄 Commutativity</h4>
+              <p class="text-sm text-slate-600 mb-2"><span class="font-mono">I * K = K * I</span></p>
+              <p class="text-xs text-slate-500">Order doesn't matter (theoretical); in practice we fix kernel and slide over image.</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">🔗 Associativity</h4>
+              <p class="text-sm text-slate-600 mb-2"><span class="font-mono">(I * K₁) * K₂ = I * (K₁ * K₂)</span></p>
+              <p class="text-xs text-slate-500">Multiple convolutions can be combined into a single equivalent kernel.</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">➕ Distributivity</h4>
+              <p class="text-sm text-slate-600 mb-2"><span class="font-mono">I * (K₁ + K₂) = I*K₁ + I*K₂</span></p>
+              <p class="text-xs text-slate-500">Convolution distributes over addition—useful for filter design.</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">🎯 Shift Invariance</h4>
+              <p class="text-sm text-slate-600 mb-2">If input shifts, output shifts by same amount</p>
+              <p class="text-xs text-slate-500">Critical for detecting features regardless of position in image.</p>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h4 class="font-semibold text-green-900 mb-2">💡 Practical Implication:</h4>
+            <p class="text-green-800 text-sm">
+              These properties enable <strong>efficient implementation</strong> (e.g., FFT-based convolution) and 
+              <strong>modular filter design</strong> (combining simple kernels to create complex detectors).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Kernels -->
+      <section id="kernels" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">4</span>
+            Kernel Design & Types
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            A <strong>kernel</strong> (or filter) is a small matrix of weights that defines what feature to extract. 
+            Different kernels detect different patterns:
+          </p>
+
+          <div class="grid md:grid-cols-3 gap-4 my-6">
+            <!-- Edge Detection -->
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 class="font-semibold text-blue-900 mb-2">📏 Edge Detection</h4>
+              <div class="pixel-grid mb-3" style="grid-template-columns: repeat(3, 1fr); font-size: 0.7rem;">
+                <div class="pixel kernel-cell">-1</div><div class="pixel kernel-cell">0</div><div class="pixel kernel-cell">1</div>
+                <div class="pixel kernel-cell">-2</div><div class="pixel kernel-cell">0</div><div class="pixel kernel-cell">2</div>
+                <div class="pixel kernel-cell">-1</div><div class="pixel kernel-cell">0</div><div class="pixel kernel-cell">1</div>
+              </div>
+              <p class="text-xs text-blue-800"><strong>Sobel X:</strong> Detects vertical edges</p>
+            </div>
+
+            <!-- Blur -->
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h4 class="font-semibold text-green-900 mb-2">🌫️ Smoothing/Blur</h4>
+              <div class="pixel-grid mb-3" style="grid-template-columns: repeat(3, 1fr); font-size: 0.7rem;">
+                <div class="pixel kernel-cell">1</div><div class="pixel kernel-cell">1</div><div class="pixel kernel-cell">1</div>
+                <div class="pixel kernel-cell">1</div><div class="pixel kernel-cell">1</div><div class="pixel kernel-cell">1</div>
+                <div class="pixel kernel-cell">1</div><div class="pixel kernel-cell">1</div><div class="pixel kernel-cell">1</div>
+              </div>
+              <p class="text-xs text-green-800"><strong>Box Filter:</strong> Averaging (divide sum by 9)</p>
+            </div>
+
+            <!-- Sharpen -->
+            <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <h4 class="font-semibold text-purple-900 mb-2">✨ Sharpening</h4>
+              <div class="pixel-grid mb-3" style="grid-template-columns: repeat(3, 1fr); font-size: 0.7rem;">
+                <div class="pixel kernel-cell">0</div><div class="pixel kernel-cell">-1</div><div class="pixel kernel-cell">0</div>
+                <div class="pixel kernel-cell">-1</div><div class="pixel kernel-cell">5</div><div class="pixel kernel-cell">-1</div>
+                <div class="pixel kernel-cell">0</div><div class="pixel kernel-cell">-1</div><div class="pixel kernel-cell">0</div>
+              </div>
+              <p class="text-xs text-purple-800"><strong>Laplacian-based:</strong> Enhances edges</p>
+            </div>
+          </div>
+
+          <div class="diagram-box my-6">
+            <h4 class="font-semibold text-slate-800 mb-3">Kernel Design Principles</h4>
+            <ul class="text-sm text-slate-600 space-y-2">
+              <li>• <strong>Sum = 0:</strong> Edge detectors (respond to changes, not constant regions)</li>
+              <li>• <strong>Sum = 1:</strong> Smoothing filters (preserve overall brightness)</li>
+              <li>• <strong>Odd dimensions:</strong> 3×3, 5×5 (ensures symmetric center pixel)</li>
+              <li>• <strong>Separable kernels:</strong> Can be decomposed into 1D convolutions (faster computation)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Stride -->
+      <section id="stride" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">5</span>
+            Stride Parameter
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            <strong>Stride</strong> defines how many pixels the kernel moves at each step. 
+            Stride = 1 means move 1 pixel; Stride = 2 means skip every other pixel.
+          </p>
+
+          <div class="formula-box">
+            <strong>Effect of Stride:</strong><br>
+            Larger stride → Smaller output → Faster computation → Less spatial detail
+          </div>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Visual Comparison</h3>
+          
+          <div class="grid md:grid-cols-2 gap-6 my-6">
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-3">Stride = 1 (Default)</h4>
+              <div class="pixel-grid mb-3" style="grid-template-columns: repeat(5, 1fr); font-size: 0.65rem;">
+                <div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel bg-blue-100 border-2 border-blue-500">K</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div>
+              </div>
+              <p class="text-xs text-slate-600">Kernel slides 1 pixel at a time → Dense feature map</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-3">Stride = 2 (Downsampling)</h4>
+              <div class="pixel-grid mb-3" style="grid-template-columns: repeat(5, 1fr); font-size: 0.65rem;">
+                <div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel bg-green-100 border-2 border-green-500">K</div><div class="pixel">·</div><div class="pixel bg-green-100 border-2 border-green-500">K</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel">·</div><div class="pixel">·</div><div class="pixel">·</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel bg-green-100 border-2 border-green-500">K</div><div class="pixel">·</div><div class="pixel bg-green-100 border-2 border-green-500">K</div><div class="pixel header">I</div>
+                <div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div><div class="pixel header">I</div>
+              </div>
+              <p class="text-xs text-slate-600">Kernel skips pixels → Sparse feature map, ½ resolution</p>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h4 class="font-semibold text-green-900 mb-2">✅ When to Use Larger Stride:</h4>
+            <ul class="text-sm text-green-800 space-y-1">
+              <li>• Reducing computational cost in deep networks</li>
+              <li>• Downsampling feature maps (alternative to pooling)</li>
+              <li>• When fine spatial detail is not critical</li>
+              <li>• Creating hierarchical representations (coarse → fine)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Padding -->
+      <section id="padding" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">6</span>
+            Padding Strategies
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            <strong>Padding</strong> adds extra pixels around the input border to control output size and preserve edge information.
+          </p>
+
+          <div class="overflow-x-auto my-6">
+            <table class="comparison-table w-full text-sm">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Output Size</th>
+                  <th>Use Case</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-medium text-slate-700">Valid (No Padding)</td>
+                  <td>No extra pixels added</td>
+                  <td>Smaller than input</td>
+                  <td>When border information is not critical</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Same (Zero Padding)</td>
+                  <td>Add zeros to match input size</td>
+                  <td>Same as input (if stride=1)</td>
+                  <td>Preserving spatial dimensions through layers</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Reflect</td>
+                  <td>Mirror input at borders</td>
+                  <td>Configurable</td>
+                  <td>Reducing border artifacts in image generation</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Replicate</td>
+                  <td>Repeat edge pixel values</td>
+                  <td>Configurable</td>
+                  <td>Maintaining edge continuity</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Zero Padding Visual Example</h3>
+          
+          <div class="diagram-box">
+            <h4 class="font-semibold text-slate-800 mb-3">Input: 3×3, Kernel: 3×3, Padding: 1, Stride: 1</h4>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <h5 class="font-medium text-sm text-slate-700 mb-2">Original Input:</h5>
+                <div class="pixel-grid" style="grid-template-columns: repeat(3, 1fr);">
+                  <div class="pixel">1</div><div class="pixel">2</div><div class="pixel">3</div>
+                  <div class="pixel">4</div><div class="pixel">5</div><div class="pixel">6</div>
+                  <div class="pixel">7</div><div class="pixel">8</div><div class="pixel">9</div>
+                </div>
+              </div>
+              <div>
+                <h5 class="font-medium text-sm text-slate-700 mb-2">After Padding=1:</h5>
+                <div class="pixel-grid" style="grid-template-columns: repeat(5, 1fr); font-size: 0.7rem;">
+                  <div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div>
+                  <div class="pixel bg-slate-200">0</div><div class="pixel">1</div><div class="pixel">2</div><div class="pixel">3</div><div class="pixel bg-slate-200">0</div>
+                  <div class="pixel bg-slate-200">0</div><div class="pixel">4</div><div class="pixel">5</div><div class="pixel">6</div><div class="pixel bg-slate-200">0</div>
+                  <div class="pixel bg-slate-200">0</div><div class="pixel">7</div><div class="pixel">8</div><div class="pixel">9</div><div class="pixel bg-slate-200">0</div>
+                  <div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div><div class="pixel bg-slate-200">0</div>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Now kernel can center on original edge pixels</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="formula-box mt-4">
+            <strong>Padding Amount for "Same" Output:</strong><br>
+            <span class="text-lg">P = (K - 1) / 2</span><br>
+            <span class="text-sm">where K = kernel size (must be odd)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Feature Maps -->
+      <section id="feature-maps" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">7</span>
+            Feature Map Generation
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            A <strong>feature map</strong> is the output of convolving an input with a kernel. 
+            Each value represents the "activation" or "response" of that kernel at that location.
+          </p>
+
+          <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+            <p class="text-blue-900 font-medium mb-2">🎯 Key Insight:</p>
+            <p class="text-blue-800">Different kernels produce different feature maps: one might highlight edges, another textures, another corners. CNNs learn optimal kernels automatically.</p>
+          </div>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Complete Trace: 4×4 Input → 2×2 Output</h3>
+          
+          <div class="grid md:grid-cols-3 gap-4 items-start">
+            <!-- Input Image -->
+            <div>
+              <h5 class="font-medium text-sm text-slate-700 mb-2">Input Image (5×5):</h5>
+              <p class="text-xs text-slate-500 mb-2">Simple vertical edge: left=dark (0), right=bright (2)</p>
+              <div class="pixel-grid" style="grid-template-columns: repeat(5, 1fr);">
+                <div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div>
+                <div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div>
+                <div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div>
+                <div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div>
+                <div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-900 text-white">0</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div><div class="pixel bg-slate-200">2</div>
+              </div>
+            </div>
+          
+            <!-- Kernel -->
+            <div>
+              <h5 class="font-medium text-sm text-slate-700 mb-2">Kernel (3×3):</h5>
+              <p class="text-xs text-slate-500 mb-2">Vertical edge detector (cross-correlation, no flip)</p>
+              <div class="pixel-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="pixel kernel-cell bg-red-200 border-red-500">-1</div><div class="pixel kernel-cell bg-slate-200">0</div><div class="pixel kernel-cell bg-green-200 border-green-500">1</div>
+                <div class="pixel kernel-cell bg-red-200 border-red-500">-1</div><div class="pixel kernel-cell bg-slate-200">0</div><div class="pixel kernel-cell bg-green-200 border-green-500">1</div>
+                <div class="pixel kernel-cell bg-red-200 border-red-500">-1</div><div class="pixel kernel-cell bg-slate-200">0</div><div class="pixel kernel-cell bg-green-200 border-green-500">1</div>
+              </div>
+              <p class="text-xs text-slate-500 mt-2 text-center">Computes: (right column) − (left column)</p>
+            </div>
+          
+            <!-- Output -->
+            <div>
+              <h5 class="font-medium text-sm text-slate-700 mb-2">Output Feature Map (3×3):</h5>
+              <p class="text-xs text-slate-500 mb-2">Positive = bright on right, Negative = bright on left</p>
+              <div class="pixel-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="pixel output-cell bg-orange-300 font-bold">6</div><div class="pixel output-cell bg-orange-300 font-bold">6</div><div class="pixel output-cell bg-slate-200">0</div>
+                <div class="pixel output-cell bg-orange-300 font-bold">6</div><div class="pixel output-cell bg-orange-300 font-bold">6</div><div class="pixel output-cell bg-slate-200">0</div>
+                <div class="pixel output-cell bg-orange-300 font-bold">6</div><div class="pixel output-cell bg-orange-300 font-bold">6</div><div class="pixel output-cell bg-slate-200">0</div>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+      </section>
+
+      <!-- Section 8: Output Size Formula -->
+      <section id="output-size" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">8</span>
+            Output Size Formula
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            The spatial dimensions of the output feature map can be calculated without performing convolution:
+          </p>
+
+          <div class="formula-box">
+            <strong>Output Size Formula:</strong><br>
+            <span class="text-lg">O = ⌊(I - K + 2P) / S⌋ + 1</span><br>
+            <span class="text-sm">
+              O = output dimension<br>
+              I = input dimension<br>
+              K = kernel size<br>
+              P = padding<br>
+              S = stride<br>
+              ⌊⌋ = floor function
+            </span>
+          </div>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Worked Examples</h3>
+          
+          <div class="grid md:grid-cols-2 gap-4 my-6">
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">Example 1: Standard Conv</h4>
+              <p class="text-sm text-slate-600 mb-2">Input=32×32, Kernel=5, Padding=2, Stride=1</p>
+              <div class="font-mono text-xs bg-white p-3 rounded">
+                O = ⌊(32 - 5 + 2×2) / 1⌋ + 1<br>
+                O = ⌊(32 - 5 + 4)⌋ + 1<br>
+                O = ⌊31⌋ + 1 = <strong>32</strong>
+              </div>
+              <p class="text-xs text-slate-500 mt-2">→ Output: 32×32 (same size)</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">Example 2: Downsampling</h4>
+              <p class="text-sm text-slate-600 mb-2">Input=28×28, Kernel=3, Padding=0, Stride=2</p>
+              <div class="font-mono text-xs bg-white p-3 rounded">
+                O = ⌊(28 - 3 + 2×0) / 2⌋ + 1<br>
+                O = ⌊25 / 2⌋ + 1<br>
+                O = ⌊12.5⌋ + 1 = <strong>13</strong>
+              </div>
+              <p class="text-xs text-slate-500 mt-2">→ Output: 13×13 (≈½ resolution)</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">Example 3: Large Kernel</h4>
+              <p class="text-sm text-slate-600 mb-2">Input=100×100, Kernel=11, Padding=5, Stride=1</p>
+              <div class="font-mono text-xs bg-white p-3 rounded">
+                O = ⌊(100 - 11 + 2×5) / 1⌋ + 1<br>
+                O = ⌊99⌋ + 1 = <strong>100</strong>
+              </div>
+              <p class="text-xs text-slate-500 mt-2">→ Output: 100×100 (padding preserves size)</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">Example 4: Asymmetric</h4>
+              <p class="text-sm text-slate-600 mb-2">Input=64×48, Kernel=7×3, Padding=3×1, Stride=2×1</p>
+              <div class="font-mono text-xs bg-white p-3 rounded">
+                O<sub>h</sub> = ⌊(64-7+6)/2⌋+1 = ⌊31.5⌋+1 = <strong>32</strong><br>
+                O<sub>w</sub> = ⌊(48-3+2)/1⌋+1 = ⌊47⌋+1 = <strong>48</strong>
+              </div>
+              <p class="text-xs text-slate-500 mt-2">→ Output: 32×48 (height downsampled)</p>
+            </div>
+          </div>
+
+          <div class="example-box">
+            <h4 class="font-semibold text-green-900 mb-2">💡 Pro Tip:</h4>
+            <p class="text-green-800 text-sm">
+              Always verify output dimensions before coding! Mismatched sizes cause runtime errors in frameworks like PyTorch/TensorFlow.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 9: Multi-Channel -->
+      <section id="multi-channel" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">9</span>
+            Multi-Channel Convolution (RGB Images)
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            Real images have 3 channels (RGB). Convolution extends naturally: the kernel also has 3 channels, and outputs are summed across channels.
+          </p>
+
+          <div class="diagram-box my-6">
+            <h4 class="font-semibold text-slate-800 mb-3">Multi-Channel Convolution Process</h4>
+            <div class="space-y-4">
+              <div class="flex items-center gap-4 flex-wrap">
+                <div class="text-center">
+                  <div class="text-2xl mb-1">🔴🟢🔵</div>
+                  <p class="text-xs text-slate-600">Input: 3 channels</p>
+                </div>
+                <span class="text-slate-400">+</span>
+                <div class="text-center">
+                  <div class="text-2xl mb-1">[K₁]</div>
+                  <div class="text-2xl mb-1">[K₂]</div>
+                  <div class="text-2xl mb-1">[K₃]</div>
+                  <p class="text-xs text-slate-600">Kernel: 3 channels</p>
+                </div>
+                <span class="text-slate-400">→</span>
+                <div class="text-center">
+                  <div class="text-2xl mb-1">Σ</div>
+                  <p class="text-xs text-slate-600">Sum across channels</p>
+                </div>
+                <span class="text-slate-400">→</span>
+                <div class="text-center">
+                  <div class="text-2xl mb-1">🗂️</div>
+                  <p class="text-xs text-slate-600">Output: 1 feature map</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="formula-box">
+            <strong>Multi-Channel Convolution:</strong><br>
+            <span class="text-lg">Output[i,j] = Σ<sub>c=1</sub><sup>C</sup> Σ<sub>m,n</sub> I<sub>c</sub>[i+m,j+n] · K<sub>c</sub>[m,n]</span><br>
+            <span class="text-sm">C = number of input channels (e.g., 3 for RGB)</span>
+          </div>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Key Points</h3>
+          <ul class="text-sm text-slate-600 space-y-2">
+            <li>• Each kernel produces <strong>one</strong> feature map, regardless of input channels</li>
+            <li>• To get <strong>N</strong> output feature maps, use <strong>N</strong> different kernels</li>
+            <li>• Kernel depth must match input depth (3 for RGB, 1 for grayscale)</li>
+            <li>• This is why CNN layers specify: <span class="font-mono">in_channels</span>, <span class="font-mono">out_channels</span></li>
+          </ul>
+        </div>
+      </section>
+
+     
+
+      <!-- Summary Box -->
+      <section class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl p-6 md:p-8">
+        <h2 class="text-2xl font-bold mb-4">📚 Summary</h2>
+        <div class="grid md:grid-cols-2 gap-6 text-sm">
+          <div>
+            <h3 class="font-semibold text-blue-300 mb-2">Core Concepts</h3>
+            <ul class="space-y-1 text-slate-300">
+              <li>• Convolution = local feature extraction</li>
+              <li>• Kernel design determines what features are detected</li>
+              <li>• Stride controls output resolution</li>
+              <li>• Padding preserves spatial dimensions</li>
+              <li>• Output size formula: O = ⌊(I-K+2P)/S⌋+1</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold text-green-300 mb-2">Practical Skills</h3>
+            <ul class="space-y-1 text-slate-300">
+              <li>• Compute convolution manually for small inputs</li>
+              <li>• Design kernels for edge detection, blurring, sharpening</li>
+              <li>• Implement convolution in NumPy/OpenCV/PyTorch</li>
+              <li>• Handle multi-channel (RGB) inputs correctly</li>
+              <li>• Predict output dimensions before coding</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-8 mt-12">
+    <div class="container mx-auto px-4 max-w-6xl text-center text-sm text-slate-600">
+      <p class="mb-2"><strong>CS-1013: Computer Vision</strong> • Lecture Notes Set 2</p>
+      <p>Department of Computer Science • The Islamia University of Bahawalpur</p>
+      <p class="mt-2">Instructor: Abdullah • abdullah.soomro@iub.edu.pk</p>
+      <a href="index.html" class="inline-block mt-4 text-blue-600 hover:underline">← Back to Course Homepage</a>
+    </div>
+  </footer>
+
+</body>
+</html>
