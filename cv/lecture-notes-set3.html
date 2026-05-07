@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS-1013: Lecture Notes Set 3 - Neural Networks: ANN & CNN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+    .code-block { 
+      background: #1e293b; 
+      color: #e2e8f0; 
+      padding: 1.5rem; 
+      border-radius: 0.5rem; 
+      overflow-x: auto; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.875rem;
+      line-height: 1.6;
+      white-space: pre;
+      tab-size: 4;
+    }
+    .diagram-box { 
+      background: #f8fafc; 
+      border: 2px solid #cbd5e1; 
+      border-radius: 0.5rem; 
+      padding: 1.5rem; 
+      margin: 1rem 0;
+    }
+    .trace-step { 
+      background: #f0f9ff; 
+      border-left: 4px solid #0284c7; 
+      padding: 1rem; 
+      margin: 0.75rem 0;
+      border-radius: 0 0.375rem 0.375rem 0;
+    }
+    .formula-box { 
+      background: #fef3c7; 
+      border: 1px solid #f59e0b; 
+      padding: 1rem; 
+      border-radius: 0.375rem; 
+      text-align: center;
+      font-size: 1.1rem;
+      margin: 1rem 0;
+    }
+    .example-box { 
+      background: #dcfce7; 
+      border: 1px solid #22c55e; 
+      padding: 1rem; 
+      border-radius: 0.375rem; 
+      margin: 1rem 0;
+    }
+    .comparison-table th, .comparison-table td { 
+      border: 1px solid #cbd5e1; 
+      padding: 0.75rem; 
+      text-align: left;
+    }
+    .comparison-table th { background: #f1f5f9; }
+    .highlight { background: linear-gradient(120deg, #fef08a 0%, #fef08a 100%); padding: 0 0.25rem; }
+    nav.toc a { 
+      display: block; 
+      padding: 0.5rem 0.75rem; 
+      border-radius: 0.375rem; 
+      color: #475569; 
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+    nav.toc a:hover { background-color: #f1f5f9; color: #0f172a; }
+    .kw { color: #c678dd; }
+    .fn { color: #61afef; }
+    .str { color: #98c379; }
+    .cmt { color: #5c6370; font-style: italic; }
+    .num { color: #d19a66; }
+    .shape-badge { 
+      display: inline-block; 
+      background: #e2e8f0; 
+      color: #0f172a; 
+      padding: 0.25rem 0.5rem; 
+      border-radius: 0.375rem; 
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-700 antialiased">
+
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Back to Course
+        </a>
+        <span class="text-slate-300">|</span>
+        <span class="text-sm text-slate-600">CS-1013 • Lecture Notes Set 3</span>
+      </div>
+      <div class="text-sm font-medium text-slate-700">Neural Networks: ANN & CNN</div>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-slate-800 to-slate-900 text-white py-12">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <div class="inline-block px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-4">
+        Lecture Notes Set 3 • Weeks 7-8
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">Neural Networks: ANN & CNN</h1>
+      <p class="text-slate-300 text-lg max-w-3xl">
+        From biological inspiration to deep architectures. Understand why fully connected networks fail for images, 
+        how CNNs preserve spatial structure, and the conceptual flow of forward & backward passes.
+      </p>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8 max-w-7xl grid md:grid-cols-4 gap-8">
+    <!-- Table of Contents -->
+    <aside class="md:col-span-1">
+      <nav class="toc sticky top-24 bg-white rounded-lg border border-slate-200 p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider border-b border-slate-200 pb-2">Table of Contents</h3>
+        <a href="#ann-intro">1. Introduction to ANN</a>
+        <a href="#ann-limitations">2. Why ANN Fails for Vision</a>
+        <a href="#cnn-arch">3. CNN Architecture Stack</a>
+        <a href="#forward-pass">4. Forward Pass: ANN vs CNN</a>
+        <a href="#backprop">5. Backpropagation: Conceptual Flow</a>
+        <a href="#shape-trace">6. Layer-by-Layer Shape Trace</a>
+        <a href="#implementation">7. PyTorch Implementation</a>
+        <a href="#takeaways">8. Key Takeaways</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="md:col-span-3 space-y-10">
+      
+      <!-- Section 1: Introduction to ANN -->
+      <section id="ann-intro" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">1</span>
+            Introduction to Artificial Neural Networks (ANN)
+          </h2>
+          
+          <p class="text-slate-600 mb-4">
+            An <strong>Artificial Neural Network</strong> is a computational model inspired by biological neurons. 
+            It consists of layers of interconnected nodes (neurons) that transform input data into predictions through weighted connections and activation functions.
+          </p>
+
+          <div class="diagram-box my-6">
+            <h4 class="font-semibold text-slate-800 mb-3">Single Neuron Computation</h4>
+            <div class="flex flex-col md:flex-row items-center gap-4 text-center">
+              <div class="flex-1">
+                <div class="text-2xl mb-1">📥</div>
+                <p class="text-sm font-medium">Inputs <span class="shape-badge">x₁, x₂, ... xₙ</span></p>
+              </div>
+              <span class="text-slate-400">→</span>
+              <div class="flex-1 bg-blue-50 p-3 rounded border border-blue-200">
+                <p class="text-xs text-blue-700 mb-1">Linear Combination</p>
+                <p class="font-mono text-sm">z = w·x + b</p>
+              </div>
+              <span class="text-slate-400">→</span>
+              <div class="flex-1 bg-green-50 p-3 rounded border border-green-200">
+                <p class="text-xs text-green-700 mb-1">Activation Function</p>
+                <p class="font-mono text-sm">a = σ(z)</p>
+              </div>
+              <span class="text-slate-400">→</span>
+              <div class="flex-1">
+                <div class="text-2xl mb-1">📤</div>
+                <p class="text-sm font-medium">Output <span class="shape-badge">y</span></p>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Common Activation Functions</h3>
+          <div class="grid md:grid-cols-3 gap-4 my-6">
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">ReLU (Rectified Linear)</h4>
+              <p class="font-mono text-sm mb-2">σ(z) = max(0, z)</p>
+              <p class="text-xs text-slate-600">Default choice in CNNs. Computationally cheap, avoids vanishing gradients.</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">Sigmoid</h4>
+              <p class="font-mono text-sm mb-2">σ(z) = 1 / (1 + e⁻ᶻ)</p>
+              <p class="text-xs text-slate-600">Squashes to [0,1]. Used for binary output layers. Suffers from vanishing gradients.</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">Softmax</h4>
+              <p class="font-mono text-sm mb-2">σ(zᵢ) = eᶻⁱ / Σeᶻʲ</p>
+              <p class="text-xs text-slate-600">Converts logits to probabilities. Used in final classification layer.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Why ANN Fails for Vision -->
+      <section id="ann-limitations" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">2</span>
+            Why ANN → CNN for Vision?
+          </h2>
+
+          <div class="overflow-x-auto my-6">
+            <table class="comparison-table w-full text-sm">
+              <thead>
+                <tr>
+                  <th class="w-1/3">Issue</th>
+                  <th class="w-1/3">Fully Connected ANN</th>
+                  <th class="w-1/3">CNN Solution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-medium text-slate-700">Spatial Structure</td>
+                  <td>Flattens 2D → 1D, destroys pixel relationships</td>
+                  <td>Preserves H×W×C structure throughout layers</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Parameter Count</td>
+                  <td>224×224×3 → 150K inputs × 4096 hidden = 614M weights</td>
+                  <td>Weight sharing: 16×3×3×3 = 432 weights per layer</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Translation</td>
+                  <td>Learned features are position-specific</td>
+                  <td>Translation invariant: detects edges anywhere</td>
+                </tr>
+                <tr>
+                  <td class="font-medium text-slate-700">Hierarchical Features</td>
+                  <td>Shallow or requires excessive depth</td>
+                  <td>Naturally learns: edges → textures → parts → objects</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="example-box">
+            <h4 class="font-semibold text-green-900 mb-2">💡 Parameter Explosion Example:</h4>
+            <p class="text-green-800 text-sm">
+              A single FC layer connecting a <span class="font-mono">32×32×3</span> image to 100 neurons requires 
+              <span class="font-mono">32×32×3×100 = 307,200</span> weights. 
+              A CNN with 10 <span class="font-mono">3×3</span> filters requires only <span class="font-mono">10×3×3×3 = 270</span> weights. 
+              <strong>1,100× fewer parameters!</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: CNN Architecture Stack -->
+      <section id="cnn-arch" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">3</span>
+            CNN Architecture Stack
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            A typical CNN follows a modular pipeline that progressively extracts and abstracts visual features:
+          </p>
+
+          <div class="diagram-box my-6">
+            <h4 class="font-semibold text-slate-800 mb-4">Standard CNN Pipeline</h4>
+            <div class="flex flex-wrap items-center justify-center gap-3 text-sm">
+              <span class="px-3 py-2 bg-slate-200 rounded font-medium">Input Image</span>
+              <span class="text-slate-400">→</span>
+              <span class="px-3 py-2 bg-blue-100 rounded border border-blue-300 font-medium">Conv2D</span>
+              <span class="text-slate-400">→</span>
+              <span class="px-3 py-2 bg-green-100 rounded border border-green-300 font-medium">ReLU</span>
+              <span class="text-slate-400">→</span>
+              <span class="px-3 py-2 bg-amber-100 rounded border border-amber-300 font-medium">MaxPool</span>
+              <span class="text-slate-400">→</span>
+              <span class="px-3 py-2 bg-purple-100 rounded border border-purple-300 font-medium">Flatten</span>
+              <span class="text-slate-400">→</span>
+              <span class="px-3 py-2 bg-rose-100 rounded border border-rose-300 font-medium">Dense/FC</span>
+              <span class="text-slate-400">→</span>
+              <span class="px-3 py-2 bg-teal-100 rounded border border-teal-300 font-medium">Softmax</span>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4 my-6">
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">🔹 Convolutional Layer</h4>
+              <p class="text-sm text-slate-600">Applies learnable filters to extract local features (edges, textures, patterns). Increases depth (channels).</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">🔸 ReLU Activation</h4>
+              <p class="text-sm text-slate-600">Introduces non-linearity. Sets negative values to 0. Enables learning complex functions.</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">🔹 Max Pooling</h4>
+              <p class="text-sm text-slate-600">Downsamples spatial dimensions. Retains strongest activations. Reduces computation & prevents overfitting.</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <h4 class="font-semibold text-slate-800 mb-2">🔸 Fully Connected</h4>
+              <p class="text-sm text-slate-600">Combines extracted features for final classification. Maps high-level features to class probabilities.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Forward Pass -->
+      <section id="forward-pass" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">4</span>
+            Forward Pass: ANN vs CNN
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            The <strong>forward pass</strong> is the process of propagating input data through the network to generate predictions. 
+            No learning happens here—just computation.
+          </p>
+
+          <div class="grid md:grid-cols-2 gap-6 my-6">
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 class="font-semibold text-blue-900 mb-2">ANN Forward Flow</h4>
+              <div class="space-y-2 text-sm font-mono bg-white p-3 rounded">
+                <p>h₁ = ReLU(W₁·x + b₁)</p>
+                <p>h₂ = ReLU(W₂·h₁ + b₂)</p>
+                <p>y = Softmax(W₃·h₂ + b₃)</p>
+              </div>
+              <p class="text-xs text-blue-800 mt-2">Matrix multiplications dominate computation. All neurons connect to all inputs.</p>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h4 class="font-semibold text-green-900 mb-2">CNN Forward Flow</h4>
+              <div class="space-y-2 text-sm font-mono bg-white p-3 rounded">
+                <p>F₁ = Conv2D(x) → ReLU → MaxPool</p>
+                <p>F₂ = Conv2D(F₁) → ReLU → MaxPool</p>
+                <p>y = Softmax(FC(Flatten(F₂)))</p>
+              </div>
+              <p class="text-xs text-green-800 mt-2">Local convolutions preserve structure. Feature maps grow in depth, shrink in H×W.</p>
+            </div>
+          </div>
+
+          <div class="diagram-box my-6">
+            <h4 class="font-semibold text-slate-800 mb-3">Data Transformation Example</h4>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-2 text-center text-xs">
+              <div class="px-3 py-2 bg-slate-100 rounded">🖼️ Input<br><span class="shape-badge">3×32×32</span></div>
+              <span class="text-slate-400">→</span>
+              <div class="px-3 py-2 bg-blue-100 rounded border border-blue-300">Conv1 + ReLU<br><span class="shape-badge">16×32×32</span></div>
+              <span class="text-slate-400">→</span>
+              <div class="px-3 py-2 bg-amber-100 rounded border border-amber-300">Pool2×2<br><span class="shape-badge">16×16×16</span></div>
+              <span class="text-slate-400">→</span>
+              <div class="px-3 py-2 bg-purple-100 rounded border border-purple-300">Conv2 + ReLU<br><span class="shape-badge">32×16×16</span></div>
+              <span class="text-slate-400">→</span>
+              <div class="px-3 py-2 bg-rose-100 rounded border border-rose-300">Flatten<br><span class="shape-badge">8192</span></div>
+              <span class="text-slate-400">→</span>
+              <div class="px-3 py-2 bg-teal-100 rounded border border-teal-300">FC + Softmax<br><span class="shape-badge">10</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Backpropagation -->
+      <section id="backprop" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">5</span>
+            Backpropagation: Conceptual Understanding
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            <strong>Backpropagation</strong> is the algorithm used to train neural networks. It calculates how much each weight contributed to the final error, 
+            then adjusts weights to reduce that error. It's essentially the <strong>chain rule applied to computation graphs</strong>.
+          </p>
+
+          <div class="formula-box">
+            <strong>Weight Update Rule:</strong><br>
+            <span class="text-lg">w<sub>new</sub> = w<sub>old</sub> − η · ∂L/∂w</span><br>
+            <span class="text-sm">η = learning rate, ∂L/∂w = gradient of loss w.r.t weight</span>
+          </div>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-6 mb-3">Four-Step Training Loop</h3>
+          
+          <div class="space-y-3 my-6">
+            <div class="trace-step">
+              <strong>Step 1: Forward Pass</strong><br>
+              <span class="text-sm text-slate-600">Input → Network → Predictions. Compute Loss (e.g., Cross-Entropy) vs Ground Truth.</span>
+            </div>
+            <div class="trace-step">
+              <strong>Step 2: Compute Gradients</strong><br>
+              <span class="text-sm text-slate-600">Traverse backwards using chain rule: ∂Loss/∂Output → ∂Loss/∂Weights. Frameworks do this automatically via autograd.</span>
+            </div>
+            <div class="trace-step">
+              <strong>Step 3: Update Weights</strong><br>
+              <span class="text-sm text-slate-600">Optimizer (SGD/Adam) applies: W = W − η·∇W. Small step in direction that reduces loss.</span>
+            </div>
+            <div class="trace-step">
+              <strong>Step 4: Repeat</strong><br>
+              <span class="text-sm text-slate-600">Loop over epochs. Loss decreases. Model generalizes. Stop when validation loss plateaus.</span>
+            </div>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-6">
+            <h4 class="font-semibold text-blue-900 mb-2">🧠 Intuition Without Calculus:</h4>
+            <p class="text-sm text-blue-800">
+              Imagine standing on a foggy mountain (loss landscape) trying to reach the valley (minimum loss). 
+              You feel the slope under your feet (gradient), take a step downhill (weight update), 
+              and repeat. The <strong>learning rate</strong> is your step size. Too big → overshoot. Too small → stuck.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Layer-by-Layer Shape Trace -->
+      <section id="shape-trace" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">6</span>
+            Layer-by-Layer Shape Trace
+          </h2>
+
+          <p class="text-slate-600 mb-4">
+            Tracking tensor shapes is critical for debugging CNNs. PyTorch uses <span class="shape-badge">[Batch, Channels, Height, Width]</span> format.
+          </p>
+
+          <div class="overflow-x-auto my-6 rounded-lg border border-slate-200">
+            <table class="w-full text-sm text-left">
+              <thead class="bg-slate-50 text-slate-700">
+                <tr>
+                  <th class="px-4 py-3 border-b">Layer</th>
+                  <th class="px-4 py-3 border-b">Operation</th>
+                  <th class="px-4 py-3 border-b">Input Shape</th>
+                  <th class="px-4 py-3 border-b">Output Shape</th>
+                  <th class="px-4 py-3 border-b">Notes</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr class="hover:bg-slate-50/50">
+                  <td class="px-4 py-3 font-medium">Input</td>
+                  <td class="px-4 py-3">—</td>
+                  <td class="px-4 py-3">—</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 3, 32, 32]</span></td>
+                  <td class="px-4 py-3 text-slate-500">Batch=1, RGB, 32×32</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-blue-50/30">
+                  <td class="px-4 py-3 font-medium">Conv1</td>
+                  <td class="px-4 py-3">Conv2D(3→16, k=3, p=1, s=1)</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 3, 32, 32]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 16, 32, 32]</span></td>
+                  <td class="px-4 py-3 text-slate-500">Padding=1 preserves H,W</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-blue-50/30">
+                  <td class="px-4 py-3 font-medium">ReLU1</td>
+                  <td class="px-4 py-3">In-place max(0,x)</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 16, 32, 32]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 16, 32, 32]</span></td>
+                  <td class="px-4 py-3 text-slate-500">Shape unchanged</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-amber-50/30">
+                  <td class="px-4 py-3 font-medium">Pool1</td>
+                  <td class="px-4 py-3">MaxPool2d(k=2, s=2)</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 16, 32, 32]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 16, 16, 16]</span></td>
+                  <td class="px-4 py-3 text-slate-500">H,W halved</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-blue-50/30">
+                  <td class="px-4 py-3 font-medium">Conv2</td>
+                  <td class="px-4 py-3">Conv2D(16→32, k=3, p=1, s=1)</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 16, 16, 16]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 32, 16, 16]</span></td>
+                  <td class="px-4 py-3 text-slate-500">Depth doubles, H,W same</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-amber-50/30">
+                  <td class="px-4 py-3 font-medium">Pool2</td>
+                  <td class="px-4 py-3">MaxPool2d(k=2, s=2)</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 32, 16, 16]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 32, 8, 8]</span></td>
+                  <td class="px-4 py-3 text-slate-500">H,W halved again</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-purple-50/30">
+                  <td class="px-4 py-3 font-medium">Flatten</td>
+                  <td class="px-4 py-3">Reshape to 1D vector</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 32, 8, 8]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 2048]</span></td>
+                  <td class="px-4 py-3 text-slate-500">32×8×8 = 2048 features</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-rose-50/30">
+                  <td class="px-4 py-3 font-medium">FC1</td>
+                  <td class="px-4 py-3">Linear(2048→128)</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 2048]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 128]</span></td>
+                  <td class="px-4 py-3 text-slate-500">High-level feature compression</td>
+                </tr>
+                <tr class="hover:bg-slate-50/50 bg-teal-50/30">
+                  <td class="px-4 py-3 font-medium">Output</td>
+                  <td class="px-4 py-3">Linear(128→10) + Softmax</td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 128]</span></td>
+                  <td class="px-4 py-3"><span class="shape-badge">[1, 10]</span></td>
+                  <td class="px-4 py-3 text-slate-500">10 class probabilities</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="example-box">
+            <h4 class="font-semibold text-green-900 mb-2">✅ Shape Verification Tip:</h4>
+            <p class="text-green-800 text-sm">
+              Always add <code class="bg-green-100 px-1 rounded">print(x.shape)</code> inside <code class="bg-green-100 px-1 rounded">forward()</code> 
+              when debugging. Mismatched shapes are the #1 cause of PyTorch runtime errors.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Implementation -->
+      <section id="implementation" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">7</span>
+            PyTorch Implementation
+          </h2>
+
+          <h3 class="text-xl font-semibold text-slate-800 mt-4 mb-3">1. Define CNN Architecture</h3>
+          
+          <pre class="code-block"><code><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.nn.functional <span class="kw">as</span> F
+
+<span class="kw">class</span> <span class="fn">SimpleCNN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, num_classes=<span class="num">10</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        
+        <span class="cmt"># Feature extraction block</span>
+        self.conv1 = nn.Conv2d(<span class="num">3</span>, <span class="num">16</span>, kernel_size=<span class="num">3</span>, padding=<span class="num">1</span>)
+        self.conv2 = nn.Conv2d(<span class="num">16</span>, <span class="num">32</span>, kernel_size=<span class="num">3</span>, padding=<span class="num">1</span>)
+        self.pool = nn.MaxPool2d(kernel_size=<span class="num">2</span>, stride=<span class="num">2</span>)
+        self.dropout = nn.Dropout(<span class="num">0.25</span>)
+        
+        <span class="cmt"># Classification block</span>
+        self.fc1 = nn.Linear(<span class="num">32</span> * <span class="num">8</span> * <span class="num">8</span>, <span class="num">128</span>)
+        self.fc2 = nn.Linear(<span class="num">128</span>, num_classes)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        <span class="cmt"># Input: [B, 3, 32, 32]</span>
+        x = self.pool(F.relu(self.conv1(x)))  <span class="cmt"># → [B, 16, 16, 16]</span>
+        x = self.pool(F.relu(self.conv2(x)))  <span class="cmt"># → [B, 32, 8, 8]</span>
+        x = torch.flatten(x, <span class="num">1</span>)               <span class="cmt"># → [B, 2048]</span>
+        x = F.relu(self.fc1(x))               <span class="cmt"># → [B, 128]</span>
+        x = self.dropout(x)
+        x = self.fc2(x)                       <span class="cmt"># → [B, 10]</span>
+        <span class="kw">return</span> x
+
+<span class="cmt"># Instantiate model</span>
+model = <span class="fn">SimpleCNN</span>(num_classes=<span class="num">10</span>)
+<span class="fn">print</span>(model)</code></pre>
+
+      
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 my-6">
+            <h4 class="font-semibold text-amber-900 mb-2">📝 Assignment Exercise:</h4>
+            <ol class="text-sm text-amber-800 space-y-2 list-decimal list-inside">
+              <li>Implement a 3-layer CNN for CIFAR-10 classification (use provided shape trace as reference)</li>
+              <li>Add BatchNorm2d after each Conv2d and observe training stability improvement</li>
+              <li>Modify learning rate to 1e-1 and 1e-5. Plot loss curves and explain the difference</li>
+              <li>Replace MaxPool with Conv2d(stride=2). Compare parameter count and accuracy</li>
+              <li>Implement manual backprop for a single 2-layer ANN using NumPy (no autograd)</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 8: Key Takeaways -->
+      <section id="takeaways" class="scroll-mt-24">
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm">8</span>
+            Key Takeaways
+          </h2>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <ul class="text-sm text-blue-800 space-y-2">
+              <li>✓ <strong>ANNs</strong> connect every input to every neuron → parameter explosion for images</li>
+              <li>✓ <strong>CNNs</strong> use local connectivity + weight sharing → efficient & spatially aware</li>
+              <li>✓ <strong>Forward pass</strong> transforms [B,C,H,W] → [B,Classes] through Conv→Pool→FC</li>
+              <li>✓ <strong>Backpropagation</strong> computes gradients automatically via autograd</li>
+              <li>✓ <strong>Shape tracking</strong> is essential: always verify tensor dimensions layer-by-layer</li>
+              <li>✓ <strong>ReLU + Pool + Dropout</strong> form the standard regularization & activation toolkit</li>
+            </ul>
+          </div>
+
+          <div class="diagram-box">
+            <h4 class="font-semibold text-slate-800 mb-3">Mental Model for CNN Training</h4>
+            <div class="flex flex-col md:flex-row items-center gap-4 text-center text-sm">
+              <div class="bg-slate-100 p-3 rounded">📊 Data</div>
+              <span class="text-slate-400">→</span>
+              <div class="bg-blue-100 p-3 rounded border border-blue-300">Forward</div>
+              <span class="text-slate-400">→</span>
+              <div class="bg-red-100 p-3 rounded border border-red-300">Loss</div>
+              <span class="text-slate-400">→</span>
+              <div class="bg-green-100 p-3 rounded border border-green-300">Backward</div>
+              <span class="text-slate-400">→</span>
+              <div class="bg-amber-100 p-3 rounded border border-amber-300">Update</div>
+              <span class="text-slate-400">→</span>
+              <div class="bg-slate-100 p-3 rounded">🔁 Repeat</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Summary Box -->
+      <section class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl p-6 md:p-8">
+        <h2 class="text-2xl font-bold mb-4">📚 Summary</h2>
+        <div class="grid md:grid-cols-2 gap-6 text-sm">
+          <div>
+            <h3 class="font-semibold text-blue-300 mb-2">Architecture Concepts</h3>
+            <ul class="space-y-1 text-slate-300">
+              <li>• ANN: Global connections, high parameter count</li>
+              <li>• CNN: Local filters, weight sharing, translation invariant</li>
+              <li>• Pipeline: Conv → ReLU → Pool → Flatten → FC</li>
+              <li>• Depth increases, spatial dimensions decrease</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold text-green-300 mb-2">Training Dynamics</h3>
+            <ul class="space-y-1 text-slate-300">
+              <li>• Forward pass: Data → Predictions</li>
+              <li>• Loss: Measures prediction error</li>
+              <li>• Backward pass: Chain rule → gradients</li>
+              <li>• Optimizer: Updates weights to minimize loss</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-8 mt-12">
+    <div class="container mx-auto px-4 max-w-6xl text-center text-sm text-slate-600">
+      <p class="mb-2"><strong>CS-1013: Computer Vision</strong> • Lecture Notes Set 3</p>
+      <p>Department of Computer Science • The Islamia University of Bahawalpur</p>
+      <p class="mt-2">Instructor: Abdullah • abdullah.soomro@iub.edu.pk</p>
+      <a href="index.html" class="inline-block mt-4 text-blue-600 hover:underline">← Back to Course Homepage</a>
+    </div>
+  </footer>
+
+</body>
+</html>
