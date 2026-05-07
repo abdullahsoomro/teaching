@@ -1,1 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS-1013: Computer Vision | The Islamia University of Bahawalpur</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: { slate: { 850: '#1e293b', 900: '#0f172a' } }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeSlideIn 0.25s ease-out; }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .nav-link.active { background-color: white; color: #0f172a; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .overflow-x-auto::-webkit-scrollbar { height: 6px; }
+    .overflow-x-auto::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .overflow-x-auto::-webkit-scrollbar-track { background: #f1f5f9; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-700 font-sans antialiased">
 
+  <!-- Navigation -->
+  <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-white font-bold text-lg">CV</div>
+        <div>
+          <h1 class="text-lg font-semibold text-slate-900 leading-tight">CS-1013: Computer Vision</h1>
+          <p class="text-xs text-slate-500">BS Computer Science • The Islamia University of Bahawalpur</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap justify-center gap-1 bg-slate-100 p-1 rounded-lg">
+        <button data-tab="overview" class="nav-link active px-3 py-2 text-sm font-medium rounded-md transition-all">Overview</button>
+        <button data-tab="syllabus" class="nav-link px-3 py-2 text-sm font-medium rounded-md text-slate-600 transition-all">Syllabus</button>
+        <button data-tab="schedule" class="nav-link px-3 py-2 text-sm font-medium rounded-md text-slate-600 transition-all">Schedule</button>
+        <!-- <button data-tab="assignments" class="nav-link px-3 py-2 text-sm font-medium rounded-md text-slate-600 transition-all">Assignments</button> -->
+        <button data-tab="resources" class="nav-link px-3 py-2 text-sm font-medium rounded-md text-slate-600 transition-all">Resources</button>
+        <button data-tab="contact" class="nav-link px-3 py-2 text-sm font-medium rounded-md text-slate-600 transition-all">Contact</button>
+        <a href="lecture-notes.html" class="px-3 py-2 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 transition-all">📖 Lecture Notes</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="bg-gradient-to-b from-slate-100 to-slate-50 border-b border-slate-200">
+    <div class="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-200/60 rounded-full text-xs font-medium text-slate-600 mb-4">
+        <span class="w-2 h-2 rounded-full bg-slate-500"></span> Spring 2026 • BS Computer Science
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3">Computer Vision</h2>
+      <p class="text-lg text-slate-600 mb-6 max-w-2xl">
+        From fundamental image processing to modern deep learning architectures. Learn how machines perceive, interpret, and generate visual data.
+      </p>
+      <div class="flex flex-wrap gap-4 text-sm">
+        <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm">
+          <span class="text-slate-500">Instructor:</span> <strong class="text-slate-800">Abdullah</strong> <span class="text-xs text-slate-500">(Lecturer)</span>
+        </div>
+        <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm">
+          <span class="text-slate-500">Credits:</span> <strong class="text-slate-800">3 (3+0)</strong>
+        </div>
+        <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm">
+          <span class="text-slate-500">Email:</span> <a href="mailto:abdullah.soomro@iub.edu.pk" class="text-blue-600 hover:underline">abdullah.soomro@iub.edu.pk</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-10 max-w-5xl">
+
+    <!-- Overview Tab -->
+    <section id="overview" class="tab-panel active">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+        <h3 class="text-xl font-semibold text-slate-900 mb-4">Course Overview</h3>
+        <p class="text-slate-600 leading-relaxed mb-6">
+          This course provides a comprehensive introduction to the theory and practice of computer vision. Students will learn how to represent, process, and extract meaningful information from digital images. The curriculum bridges classical image processing techniques with modern deep learning approaches, preparing students for research and industry roles in AI, robotics, and intelligent systems.
+        </p>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h4 class="font-medium text-slate-800 mb-2">Learning Outcomes</h4>
+            <ul class="space-y-2 text-slate-600">
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Differentiate between AI, Computer Vision, Image Processing & Graphics</li>
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Apply image enhancement, thresholding, and histogram techniques</li>
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Design and train CNNs for classification tasks</li>
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Evaluate models using standard metrics and prevent overfitting</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-medium text-slate-800 mb-2">Prerequisites & Tools</h4>
+            <ul class="space-y-2 text-slate-600">
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Programming Fundamentals (Python)</li>
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Basic Linear Algebra & Probability</li>
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Python, NumPy, OpenCV, PyTorch, Jupyter</li>
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 bg-slate-400 rounded-full"></span> Git & GitHub for version control</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+          <p class="text-sm text-slate-600"><strong class="text-slate-800">Lab Environment:</strong> All practical work will be conducted using Jupyter Notebooks. Submission via IUB LMS. Internet required for CDN-based libraries.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Syllabus Tab -->
+    <section id="syllabus" class="tab-panel">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+        <h3 class="text-xl font-semibold text-slate-900 mb-4">Course Syllabus</h3>
+        
+        <div class="mb-6">
+          <h4 class="text-sm font-semibold text-green-700 uppercase tracking-wide mb-3 flex items-center gap-2">✅ Covered Material (Weeks 1-10)</h4>
+          <div class="space-y-3 border-l-2 border-green-200 pl-4">
+            <div><span class="font-medium text-slate-800">Fundamentals & Applications</span><p class="text-sm text-slate-600">AI vs CV, Image Processing vs CV, Computer Graphics vs CV, Real-world applications of computer vision</p></div>
+            <div><span class="font-medium text-slate-800">Image Processing Basics</span><p class="text-sm text-slate-600">Image formation, contrast stretching, binarization, global/adaptive thresholding, histogram analysis & equalization</p></div>
+            <div><span class="font-medium text-slate-800">Convolution & Feature Maps</span><p class="text-sm text-slate-600">Convolution operation & properties, stride, padding, kernel design, feature map generation, output size calculation formula</p></div>
+            <div><span class="font-medium text-slate-800">Neural Networks & Training</span><p class="text-sm text-slate-600">ANN vs CNN rationale, CNN architecture stack, forward pass intuition, conceptual backpropagation, epoch, loss functions (BCE), optimizers (SGD, Adam), metrics (Accuracy, Precision, Recall, F1), overfitting/underfitting, bias-variance tradeoff, train/val/test split</p></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-semibold text-blue-700 uppercase tracking-wide mb-3 flex items-center gap-2">📅 Upcoming Material (Weeks 11-15)</h4>
+          <div class="space-y-3 border-l-2 border-blue-200 pl-4">
+            <div><span class="font-medium text-slate-800">Advanced CNN Architectures</span><p class="text-sm text-slate-600">ResNet & skip connections, EfficientNet, batch normalization, dropout, regularization techniques</p></div>
+            <div><span class="font-medium text-slate-800">Object Detection</span><p class="text-sm text-slate-600">Sliding window vs modern detectors, YOLO architecture, R-CNN family, Non-Maximum Suppression (NMS), mAP evaluation</p></div>
+            <div><span class="font-medium text-slate-800">Semantic Segmentation</span><p class="text-sm text-slate-600">Fully Convolutional Networks (FCN), U-Net, encoder-decoder pipelines, IoU & Dice metrics</p></div>
+            <div><span class="font-medium text-slate-800">Transfer Learning & Vision Transformers</span><p class="text-sm text-slate-600">Fine-tuning pretrained models, attention mechanism, ViT architecture, self-supervised learning basics</p></div>
+            <div><span class="font-medium text-slate-800">Final Project & Course Review</span><p class="text-sm text-slate-600">End-to-end pipeline development, model deployment basics, project presentations, comprehensive review</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Schedule Tab -->
+    <section id="schedule" class="tab-panel">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+        <h3 class="text-xl font-semibold text-slate-900 mb-4">Course Schedule</h3>
+        <div class="overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 text-slate-600 uppercase text-xs font-semibold">
+              <tr>
+                <th class="px-4 py-3 border-b border-slate-200">Week</th>
+                <th class="px-4 py-3 border-b border-slate-200">Lecture Topic</th>
+                <th class="px-4 py-3 border-b border-slate-200">Practical / Lab</th>
+                <th class="px-4 py-3 border-b border-slate-200">Deadline / Assessment</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr class="hover:bg-slate-50/50"><td class="px-4 py-3 font-medium text-slate-700">W1-2</td><td class="px-4 py-3 text-slate-600">Intro to CV, AI vs CV, Applications, Image Formation</td><td class="px-4 py-3 text-slate-600">OpenCV setup, image I/O, basic operations</td><td class="px-4 py-3 text-slate-600">—</td></tr>
+              <tr class="hover:bg-slate-50/50"><td class="px-4 py-3 font-medium text-slate-700">W3-4</td><td class="px-4 py-3 text-slate-600">Contrast Stretching, Thresholding, Histograms</td><td class="px-4 py-3 text-slate-600">Image enhancement & binarization lab</td><td class="px-4 py-3 text-slate-600">Lab 1 Submission</td></tr>
+              <tr class="hover:bg-slate-50/50"><td class="px-4 py-3 font-medium text-slate-700">W5-6</td><td class="px-4 py-3 text-slate-600">Convolution, Stride, Padding, Feature Maps</td><td class="px-4 py-3 text-slate-600">Manual conv implementation, output size calc</td><td class="px-4 py-3 text-slate-600">Assignment 1</td></tr>
+              <tr class="hover:bg-slate-50/50"><td class="px-4 py-3 font-medium text-slate-700">W7-8</td><td class="px-4 py-3 text-slate-600">ANN vs CNN, CNN Architecture, Forward Pass</td><td class="px-4 py-3 text-slate-600">Building first CNN in PyTorch</td><td class="px-4 py-3 text-slate-600">Quiz 1</td></tr>
+              <tr class="hover:bg-slate-50/50"><td class="px-4 py-3 font-medium text-slate-700">W9-10</td><td class="px-4 py-3 text-slate-600">Loss Functions, Optimizers, Metrics, Bias-Variance</td><td class="px-4 py-3 text-slate-600">Training loop, model evaluation & regularization</td><td class="px-4 py-3 text-slate-600">Assignment 2</td></tr>
+              <tr class="hover:bg-slate-50/50 bg-blue-50/30"><td class="px-4 py-3 font-medium text-blue-800">W11</td><td class="px-4 py-3 text-blue-700">Advanced CNNs & Regularization</td><td class="px-4 py-3 text-blue-700">ResNet fine-tuning, BatchNorm, Dropout</td><td class="px-4 py-3 text-blue-700">—</td></tr>
+              <tr class="hover:bg-slate-50/50 bg-blue-50/30"><td class="px-4 py-3 font-medium text-blue-800">W12</td><td class="px-4 py-3 text-blue-700">Object Detection Fundamentals</td><td class="px-4 py-3 text-blue-700">YOLO inference, bounding box formatting</td><td class="px-4 py-3 text-blue-700">Project Proposal</td></tr>
+              <tr class="hover:bg-slate-50/50 bg-blue-50/30"><td class="px-4 py-3 font-medium text-blue-800">W13</td><td class="px-4 py-3 text-blue-700">Semantic Segmentation</td><td class="px-4 py-3 text-blue-700">U-Net implementation & mask evaluation</td><td class="px-4 py-3 text-blue-700">Mid-Project Check</td></tr>
+              <tr class="hover:bg-slate-50/50 bg-blue-50/30"><td class="px-4 py-3 font-medium text-blue-800">W14</td><td class="px-4 py-3 text-blue-700">Transfer Learning & Vision Transformers</td><td class="px-4 py-3 text-blue-700">Pretrained ViT feature extraction</td><td class="px-4 py-3 text-blue-700">Assignment 3</td></tr>
+              <tr class="hover:bg-slate-50/50 bg-blue-50/30"><td class="px-4 py-3 font-medium text-blue-800">W15</td><td class="px-4 py-3 text-blue-700">Final Project Presentations & Review</td><td class="px-4 py-3 text-blue-700">Demo sessions, deployment basics</td><td class="px-4 py-3 text-blue-700">Final Report & Code</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Resources Tab -->
+    <section id="resources" class="tab-panel">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+        <h3 class="text-xl font-semibold text-slate-900 mb-4">Learning Resources</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div>
+            <h4 class="font-medium text-slate-800 mb-3 flex items-center gap-2">📚 Textbooks</h4>
+            <ul class="space-y-2 text-sm text-slate-600">
+              <li>• Szeliski, R. <em>Computer Vision: Algorithms and Applications</em></li>
+              <li>• Gonzalez & Woods, <em>Digital Image Processing</em></li>
+              <li>• Prince, S.J.D. <em>Understanding Deep Learning</em> (MIT Press, 2023)</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-medium text-slate-800 mb-3 flex items-center gap-2">💻 Frameworks</h4>
+            <ul class="space-y-2 text-sm text-slate-600">
+              <li>• OpenCV: <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">pip install opencv-python</code></li>
+              <li>• PyTorch: <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">torch, torchvision</code></li>
+              <li>• scikit-image, albumentations, timm</li>
+              <li>• Hugging Face Transformers (ViT)</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-medium text-slate-800 mb-3 flex items-center gap-2">🗃️ Datasets</h4>
+            <ul class="space-y-2 text-sm text-slate-600">
+              <li>• CIFAR-10/100, MNIST, Fashion-MNIST</li>
+              <li>• COCO, Pascal VOC</li>
+              <li>• IUB Campus Dataset (LMS)</li>
+              <li>• Kaggle Vision Datasets</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+          <h4 class="font-medium text-slate-800 mb-2">Recommended Online Courses</h4>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li>• Stanford CS231n: Convolutional Neural Networks for Visual Recognition</li>
+            <li>• Fast.ai Practical Deep Learning for Coders</li>
+            <li>• Coursera: DeepLearning.AI Computer Vision Specialization</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Tab -->
+    <section id="contact" class="tab-panel">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 md:p-8">
+        <h3 class="text-xl font-semibold text-slate-900 mb-4">Instructor & Contact</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 text-xl font-semibold">A</div>
+              <div>
+                <h4 class="text-lg font-medium text-slate-800">Abdullah</h4>
+                <p class="text-sm text-slate-500">Lecturer, Department of Computer Science</p>
+                <p class="text-sm text-slate-500">The Islamia University of Bahawalpur</p>
+              </div>
+            </div>
+            <div class="space-y-3 text-sm">
+              <div class="flex items-center gap-3 text-slate-600">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <span>abdullah.soomro@iub.edu.pk</span>
+              </div>
+              <div class="flex items-center gap-3 text-slate-600">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span>Room # 1.77, Dept. of Computer Science, Baghdad ul Jadid Campus, Bahawalpur</span>
+              </div>
+              <div class="flex items-center gap-3 text-slate-600">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Office Hours: By Appointment (Email to schedule)</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+            <h4 class="font-medium text-slate-800 mb-2">Communication Policy</h4>
+            <ul class="text-sm text-slate-600 space-y-2">
+              <li>• Use official IUB email for all course queries.</li>
+              <li>• Include <strong>[CS-1013]</strong> in the subject line.</li>
+              <li>• Allow 24–48 hours for a response.</li>
+              <li>• Urgent academic matters: Visit Room 1.77 during posted hours or request a meeting via email.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-8">
+    <div class="container mx-auto px-4 max-w-5xl flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-center md:text-left">
+        <p class="text-sm font-medium text-slate-800">CS-1013: Computer Vision</p>
+        <p class="text-xs text-slate-500">Department of Computer Science, The Islamia University of Bahawalpur</p>
+      </div>
+      <div class="flex gap-4 text-xs text-slate-500">
+        <a href="#" class="hover:text-slate-800 transition-colors">IUB LMS</a>
+        <span class="text-slate-300">|</span>
+        <a href="lecture-notes.html" class="text-blue-600 hover:underline">Lecture Notes</a>
+        <span class="text-slate-300">|</span>
+        <span>&copy; 2026 Abdullah</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Tab Switching Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabButtons = document.querySelectorAll('[data-tab]');
+      const tabPanels = document.querySelectorAll('.tab-panel');
+
+      function activateTab(tabId) {
+        tabButtons.forEach(btn => {
+          btn.classList.remove('active');
+          btn.classList.add('text-slate-600');
+          if (btn.dataset.tab === tabId) {
+            btn.classList.add('active');
+            btn.classList.remove('text-slate-600');
+          }
+        });
+        tabPanels.forEach(panel => {
+          panel.classList.remove('active');
+          if (panel.id === tabId) panel.classList.add('active');
+        });
+      }
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+      });
+    });
+  </script>
+</body>
+</html>
